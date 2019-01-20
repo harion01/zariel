@@ -43,6 +43,9 @@ public class CSVmerge {
                 } else {
                     if(isJapPO) {
                         basePO.setTarget(targetPO.getSource());
+                    } else {
+                        basePO.setTarget(targetPO.getTarget() +"-OLD-");
+                        basePO.setFuzzy(true);
                     }
                 }
             }
