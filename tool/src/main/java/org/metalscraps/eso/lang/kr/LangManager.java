@@ -148,13 +148,14 @@ class LangManager {
 			makePotFile(poList, true, oneCSV.getZanataFileName(), oneCSV.getType(), "trs", "ko", "po");
 		}
 
+
 		System.out.println("Select Csv file for generate ja-JP locale");
 		targetCSV = originCG.GetSelectedCSVMap();
 		merge.MergeCSV(categorizedCSV, targetCSV, true);
 		for(CategoryCSV oneCSV : categorizedCSV){
 			HashMap<String, PO> mergedPO = oneCSV.getPODataMap();
 			ArrayList<PO> poList = new ArrayList<>(mergedPO.values());
-			makePotFile(poList, true, oneCSV.getZanataFileName(), oneCSV.getType(), "trs", "ja-JP", "po");
+			makePotFile(poList, true, oneCSV.getZanataFileName(), oneCSV.getType(), "trs", "ja", "po");
 		}
 
 	}
@@ -167,8 +168,8 @@ class LangManager {
 			if(po.getSource().equals(po.getTarget())){
 				po.setTarget("");
 			}
-			po.setTarget(po.getTarget().replace("\"\"", "\"") );
-			po.setSource(po.getSource().replace("\"\"", "\"") );
+			//po.setTarget(po.getTarget().replace("\"\"", "\"") );
+			//po.setSource(po.getSource().replace("\"\"", "\"") );
 		}
 
 		if("book".equals(targetCSV.getType())){
@@ -230,7 +231,7 @@ class LangManager {
 		if("item".equals(type)){
 			splitLimit = 5000;
 		} else if ("skill".equals(type)){
-			splitLimit = 10000;
+			splitLimit = 90000;
 		} else if ("story".equals(type)){
 			splitLimit = 6000;
 		} else if ("book".equals(type)){
@@ -272,6 +273,7 @@ class LangManager {
 			} else {
 				sb.append(p.toPOT());
 			}
+
 			appendCount++;
 		}
 
@@ -286,9 +288,13 @@ class LangManager {
 		try {
 			for (Map.Entry<String, StringBuilder> entry : builderMap.entrySet()) {
 				if("trs".equals(folder)) {
-					FileUtils.writeStringToFile(new File(appWorkConfig.getBaseDirectory() + "/" + folder + "/" + type + "/" + language + "/" + entry.getKey() + "." + fileExtension), entry.getValue().toString(), AppConfig.CHARSET);
+					String path = appWorkConfig.getBaseDirectory() + "/" + folder + "/" + type + "/" + language + "/" + entry.getKey() + "." + fileExtension;
+					System.out.println("gen file ["+path+"]");
+					FileUtils.writeStringToFile(new File(path), entry.getValue().toString(), AppConfig.CHARSET);
 				}else {
-					FileUtils.writeStringToFile(new File(appWorkConfig.getBaseDirectory() + "/" + folder + "/" + type + "/" + entry.getKey() + "." + fileExtension), entry.getValue().toString(), AppConfig.CHARSET);
+					String path = appWorkConfig.getBaseDirectory() + "/" + folder + "/" + type + "/" + entry.getKey() + "." + fileExtension;
+					System.out.println("gen file ["+path+"]");
+					FileUtils.writeStringToFile(new File(path), entry.getValue().toString(), AppConfig.CHARSET);
 				}
 			}
 		} catch (Exception e) {

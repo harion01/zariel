@@ -247,6 +247,9 @@ public class WebCrawler {
             String originFilename = oneCSV.getZanataFileName();
             String convFilename = originFilename.replace("::", "-");
             oneCSV.setZanataFileName(convFilename);
+            if(originFilename.equals("Weapon:Destruction Staff")){
+                oneCSV.setZanataFileName("Weapon-Destruction Staff 2");
+            }
         }
 
         return ret;
