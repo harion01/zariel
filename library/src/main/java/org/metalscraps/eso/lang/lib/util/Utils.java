@@ -102,7 +102,8 @@ public class Utils {
 
     public static void downloadPO(AppWorkConfig appWorkConfig, String projectName) {
 
-        final String url = AppConfig.ZANATA_DOMAIN+"rest/file/translation/"+projectName+"/"+Utils.getLatestVersion(projectName)+"/ko/po?docId=";
+        //final String url = AppConfig.ZANATA_DOMAIN+"rest/file/translation/"+projectName+"/"+Utils.getLatestVersion(projectName)+"/ko/po?docId=";
+        final String url = AppConfig.ZANATA_DOMAIN+"rest/file/translation/"+projectName+"/1.0/ko/po?docId=";
         final File PODirectory = new File(appWorkConfig.getBaseDirectory() + "/PO_" + appWorkConfig.getToday());
         appWorkConfig.setPODirectory(PODirectory);
 
@@ -169,6 +170,18 @@ public class Utils {
         StringBuilder sb = new StringBuilder("\"Location\",\"Source\",\"Target\"\n");
         for (PO p : poList) {
             sb.append(p.toCSV(toCSVConfig));
+        }
+        try {
+            FileUtils.writeStringToFile(file, sb.toString(), AppConfig.CHARSET);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void makeGoogleSpreadCSV(File file, ToCSVConfig toCSVConfig, ArrayList<PO> poList) {
+        StringBuilder sb = new StringBuilder("\"Location\",\"Source\",\"Target\"\n");
+        for (PO p : poList) {
+            sb.append(p.toGoogleSpreadCSV(toCSVConfig));
         }
         try {
             FileUtils.writeStringToFile(file, sb.toString(), AppConfig.CHARSET);
@@ -271,7 +284,9 @@ public class Utils {
             source = Objects.requireNonNull(source).replaceAll("msgid \"\\\\+\"\n", "msgid \"\"\n") // "//" 이런식으로 되어있는 문장 수정. Extractor 에서 에러남.
                     .replaceAll("msgstr \"\\\\+\"\n", "msgstr \"\"\n") // "//" 이런식으로 되어있는 문장 수정. Extractor 에서 에러남.
                     .replaceAll("\\\\\"", "\"\"") // \" 로 되어있는 쌍따옴표 이스케이프 변환 "" 더블-더블 쿼테이션으로 이스케이프 시켜야함.
-                    .replaceAll("\\\\\\\\", "\\\\"); // 백슬래쉬 두번 나오는거 ex) ESOUI\\ABC\\DEF 하나로 고침.
+                    .replaceAll("\\\\\\\\", "\\\\") // 백슬래쉬 두번 나오는거 ex) ESOUI\\ABC\\DEF 하나로 고침.
+                    .replaceAll("\\\\(?!n)", "\\\\\\\\") // tip.pot-41714900-0-307 기타 등등 \ 이스케이프 문자 \n 제외하고 전부 \\로 이중 이스케이프
+                    .replaceAll("\\\\n", "\"\n\"\\\\n");  // "Lorem Ipsum is\nsimply" => "Lorem Ipsum is" + \n + "\\\\\nsimply" -> \n 자나타에서 \n 파싱 안됨
 
         }
         return source;
@@ -394,6 +409,12 @@ public class Utils {
     public static void makeCSVwithLog(File file, ToCSVConfig csvConfig, ArrayList<PO> sourceList) {
         LocalTime timeTaken = LocalTime.now();
         Utils.makeCSV(file, csvConfig, sourceList);
+        logger.info(file.getName() + timeTaken.until(LocalTime.now(), ChronoUnit.SECONDS) + "초");
+    }
+
+    public static void makeGoogleSpreadCSVwithLog(File file, ToCSVConfig csvConfig, ArrayList<PO> sourceList) {
+        LocalTime timeTaken = LocalTime.now();
+        Utils.makeGoogleSpreadCSV(file, csvConfig, sourceList);
         logger.info(file.getName() + timeTaken.until(LocalTime.now(), ChronoUnit.SECONDS) + "초");
     }
 

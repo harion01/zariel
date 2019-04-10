@@ -31,7 +31,6 @@ class ToolMain {
 		System.out.println("2. PO 폰트 매핑/변환");
 		System.out.println("3. CSV 생성");
 		System.out.println("4. 기존 번역물 합치기");
-		System.out.println("44. 기존 번역물 합치기 => JSON");
 		System.out.println("5. 다!");
 		System.out.print("6. 작업폴더 변경 ");
 		System.out.println(appWorkConfig.getBaseDirectory());
@@ -40,13 +39,11 @@ class ToolMain {
 		System.out.println("9. 종료");
 		System.out.println("11. TTC");
 		System.out.println("12. Destinations");
-		System.out.println("100. PO -> 구글 번역 (beta)");
 		System.out.println("300. Zanata upload용 csv category 생성");
+		System.out.println("400. Google sheet upload용 csv category 생성");
 	}
 
 	private void workLangManager(JFileChooser jFileChooser) {
-		CategoryGenerator CG = new CategoryGenerator(appWorkConfig);
-
 		LangManager lm = new LangManager(appWorkConfig);
 
 		switch(this.getCommand()) {
@@ -55,7 +52,6 @@ class ToolMain {
 			case 2: Utils.convertKO_PO_to_CN(appWorkConfig); break;
 			case 3: lm.makeCSVs(); break;
 			case 4: lm.makeLang(); break;
-			case 44: lm.makeLangToJSON(); break;
 			case 5:
 				Utils.downloadPOs(appWorkConfig);
 				Utils.convertKO_PO_to_CN(appWorkConfig);
@@ -74,9 +70,8 @@ class ToolMain {
 			case 9: System.exit(0);
 			case 11: new TamrielTradeCentre(appWorkConfig).start(); break;
 			case 12: new Destinations(appWorkConfig).start(); break;
-			case 100: lm.translateGoogle(); break;
-			case 200: CG.GenCategory(); break;
 			case 300: lm.GenZanataUploadSet(); break;
+			case 400: lm.GenCSVforGoogleSheet(); break;
 		}
 	}
 

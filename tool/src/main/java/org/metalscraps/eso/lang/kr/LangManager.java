@@ -149,6 +149,7 @@ class LangManager {
 		}
 
 
+
 		System.out.println("Select Csv file for generate ja-JP locale");
 		targetCSV = originCG.GetSelectedCSVMap();
 		merge.MergeCSV(categorizedCSV, targetCSV, true);
@@ -160,6 +161,71 @@ class LangManager {
 
 	}
 
+	void GenCSVforGoogleSheet(){
+
+		CategoryGenerator originCG = new CategoryGenerator(appWorkConfig);
+		originCG.GenCategoryConfigMap(appWorkConfig.getZanataCategoryConfigDirectory().toString()+"\\IndexMatch.txt");
+		originCG.GenCategory();
+		HashSet<CategoryCSV> categorizedCSV = originCG.getCategorizedCSV();
+
+
+		System.out.println("Select Csv file for tras data gen");
+		HashMap<String, PO> targetCSV;
+		targetCSV = originCG.GetSelectedCSVMap();
+
+		CSVmerge merge = new CSVmerge();
+		merge.MergeCSV(categorizedCSV, targetCSV, false);
+
+		ArrayList<PO> skill = new ArrayList<>();
+		ArrayList<PO> system = new ArrayList<>();
+		ArrayList<PO> item = new ArrayList<>();
+		ArrayList<PO> story = new ArrayList<>();
+		ArrayList<PO> quest = new ArrayList<>();
+		ArrayList<PO> journal_subtitle = new ArrayList<>();
+		ArrayList<PO> book = new ArrayList<>();
+		for(CategoryCSV oneCSV : categorizedCSV){
+			System.out.println("one CSV ["+oneCSV.getZanataFileName()+"] type ["+oneCSV.getType()+"]");
+			if(oneCSV.getType().equals("skill")){
+				skill.addAll(oneCSV.getPODataMap().values());
+			}else if (oneCSV.getType().equals("item")){
+				item.addAll(oneCSV.getPODataMap().values());
+			}else if (oneCSV.getType().equals("story")){
+				for(PO onePO : oneCSV.getPODataMap().values()){
+					if(onePO.getSource().equals(onePO.getTarget())){
+						onePO.setTarget("Not translated");
+					}
+				}
+
+				story.addAll( oneCSV.getPODataMap().values());
+			}else if (oneCSV.getType().equals("book")){
+				for(PO onePO : oneCSV.getPODataMap().values()){
+					if(onePO.getSource().equals(onePO.getTarget())){
+						onePO.setTarget("Not translated");
+					}
+				}
+				book.addAll(oneCSV.getPODataMap().values());
+			}else {
+				for(PO onePO : oneCSV.getPODataMap().values()){
+					if(onePO.getSource().equals(onePO.getTarget())){
+						onePO.setTarget("Not translated");
+					}
+				}
+				system.addAll(oneCSV.getPODataMap().values());
+			}
+		}
+
+
+		ToCSVConfig csvConfig = new ToCSVConfig().setWriteSource(true);
+		csvConfig.setBeta(true);
+		Utils.makeGoogleSpreadCSVwithLog(new File(appWorkConfig.getBaseDirectory() + "/imsi_skill" + appWorkConfig.getTodayWithYear() + ".csv"), csvConfig, skill);
+		Utils.makeGoogleSpreadCSVwithLog(new File(appWorkConfig.getBaseDirectory() + "/imsi_story" + appWorkConfig.getTodayWithYear() + ".csv"), csvConfig, story);
+		Utils.makeGoogleSpreadCSVwithLog(new File(appWorkConfig.getBaseDirectory() + "/imsi_book" + appWorkConfig.getTodayWithYear() + ".csv"), csvConfig, book);
+		Utils.makeGoogleSpreadCSVwithLog(new File(appWorkConfig.getBaseDirectory() + "/imsi_item" + appWorkConfig.getTodayWithYear() + ".csv"), csvConfig, item);
+		Utils.makeGoogleSpreadCSVwithLog(new File(appWorkConfig.getBaseDirectory() + "/imsi_system" + appWorkConfig.getTodayWithYear() + ".csv"), csvConfig, system);
+
+	}
+
+
 	private void CustomPOmodify(CategoryCSV targetCSV){
 
 		HashMap<String, PO> targetPO = targetCSV.getPODataMap();
@@ -168,8 +234,12 @@ class LangManager {
 			if(po.getSource().equals(po.getTarget())){
 				po.setTarget("");
 			}
-			//po.setTarget(po.getTarget().replace("\"\"", "\"") );
-			//po.setSource(po.getSource().replace("\"\"", "\"") );
+			po.setTarget(po.getTarget().replace("\"\"", "\"") );
+			po.setSource(po.getSource().replace("\"\"", "\"") );
+			if(po.getSource().equals("\\\"")){
+				po.setSource("\\\\");
+				po.setTarget("\\\\");
+			}
 		}
 
 		if("book".equals(targetCSV.getType())){
@@ -185,6 +255,7 @@ class LangManager {
 				}
 			}
 		}
+
 
 
 	}
@@ -220,7 +291,6 @@ class LangManager {
 		}
 		Reordered.addAll(Match);
 		Reordered.addAll(NonMatch);
-		//Reordered.remove(0);
 		return Reordered;
 	}
 
@@ -231,14 +301,15 @@ class LangManager {
 		if("item".equals(type)){
 			splitLimit = 5000;
 		} else if ("skill".equals(type)){
-			splitLimit = 90000;
+			splitLimit = 10000;
 		} else if ("story".equals(type)){
-			splitLimit = 6000;
+			splitLimit = 10000;
 		} else if ("book".equals(type)){
 			splitLimit = 500;
 		} else if ("system".equals(type)){
 			splitLimit = 4000;
 		}
+		splitLimit = 99999999;
 		int fileCount = 0;
 		int appendCount = 0;
 		String splitFile = fileName;
@@ -287,14 +358,17 @@ class LangManager {
 
 		try {
 			for (Map.Entry<String, StringBuilder> entry : builderMap.entrySet()) {
+				String sbConv = entry.getValue().toString();
+				sbConv.replaceAll("\\\\(?!n)", "\\\\\\\\");
+				sbConv = sbConv.replaceAll("\\\\n", "\"\n\"\\\\n");
 				if("trs".equals(folder)) {
 					String path = appWorkConfig.getBaseDirectory() + "/" + folder + "/" + type + "/" + language + "/" + entry.getKey() + "." + fileExtension;
 					System.out.println("gen file ["+path+"]");
-					FileUtils.writeStringToFile(new File(path), entry.getValue().toString(), AppConfig.CHARSET);
+					FileUtils.writeStringToFile(new File(path), sbConv, AppConfig.CHARSET);
 				}else {
 					String path = appWorkConfig.getBaseDirectory() + "/" + folder + "/" + type + "/" + entry.getKey() + "." + fileExtension;
 					System.out.println("gen file ["+path+"]");
-					FileUtils.writeStringToFile(new File(path), entry.getValue().toString(), AppConfig.CHARSET);
+					FileUtils.writeStringToFile(new File(path), sbConv, AppConfig.CHARSET);
 				}
 			}
 		} catch (Exception e) {
@@ -356,13 +430,10 @@ class LangManager {
 			sb.append(x);
 		}
 
-
 		try {
-
 			for (Map.Entry<String, StringBuilder> entry : builderMap.entrySet()) {
 				FileUtils.writeStringToFile(new File(appWorkConfig.getBaseDirectory() + "/temp14/" + entry.getKey() + ".pot"), entry.getValue().toString(), AppConfig.CHARSET);
 			}
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -377,60 +448,10 @@ class LangManager {
 		Utils.makeCSVwithLog(new File(appWorkConfig.getBaseDirectory() + "/kr_" + appWorkConfig.getTodayWithYear() + ".po2.csv"), csvConfig, sourceList);
 		Utils.makeCSVwithLog(new File(appWorkConfig.getBaseDirectory() + "/kr_beta_" + appWorkConfig.getTodayWithYear() + ".po2.csv"), csvConfig.setBeta(true), sourceList);
 		Utils.makeCSVwithLog(new File(appWorkConfig.getBaseDirectory() + "/tr_" + appWorkConfig.getTodayWithYear() + ".po2.csv"), csvConfig.setWriteFileName(true).setBeta(false), sourceList);
-
 	}
 
 
-	void makeLangToJSON() {
 
-		// EsoExtractData.exe depot/eso.mnf export -a 0
-		// EsoExtractData.exe -l en_0124.lang -p
-
-		LinkedList<File> fileLinkedList = new LinkedList<>();
-		HashMap<String, PO> map = new HashMap<>();
-
-		JFileChooser jFileChooser = new JFileChooser();
-		jFileChooser.setMultiSelectionEnabled(false);
-		jFileChooser.setCurrentDirectory(appWorkConfig.getBaseDirectory());
-		jFileChooser.setFileFilter(new FileFilter() {
-			@Override
-			public boolean accept(File f) {
-				return FilenameUtils.getExtension(f.getName()).equals("csv") | f.isDirectory();
-			}
-
-			@Override
-			public String getDescription() {
-				return "*.csv";
-			}
-		});
-
-		while (jFileChooser.showOpenDialog(null) != JFileChooser.CANCEL_OPTION) {
-			jFileChooser.setCurrentDirectory(jFileChooser.getSelectedFile());
-			fileLinkedList.add(jFileChooser.getSelectedFile());
-		}
-
-		if (fileLinkedList.size() == 0) return;
-
-		SourceToMapConfig sourceToMapConfig = new SourceToMapConfig().setPattern(AppConfig.CSVPattern);
-		for (File file : fileLinkedList) {
-			System.out.println(file);
-			map.putAll(Utils.sourceToMap(sourceToMapConfig.setFile(file)));
-		}
-
-		JSONObject jsonObject = new JSONObject();
-		for (PO p : map.values()) jsonObject.put(p.getId(), p.getFileName() + "_" + Utils.CNtoKO((p.getTarget())));
-		String x = jsonObject.toString();
-
-		System.out.println(x);
-
-		try {
-			FileUtils.writeStringToFile(new File(appWorkConfig.getBaseDirectory() + "/json.json"), x, AppConfig.CHARSET);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-
-	}
 
 	void makeNewLang(){
 		CategoryGenerator CG = new CategoryGenerator(appWorkConfig);

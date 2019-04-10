@@ -48,6 +48,7 @@ public class CategoryGenerator {
         HashMap<String, PO> CSVMap = GetSelectedCSVMap();
         GenSubCategory(CSVMap);
         GenMainCategory(CSVMap);
+
         CategoryCSV bookCSV = null;
         for(CategoryCSV oneCSV : this.getCategorizedCSV()){
             if("book".equals(oneCSV.getZanataFileName())){

@@ -37,14 +37,14 @@ public class CSVmerge {
             if(targetPO == null){
                 System.out.println("no index in target:"+index);
             } else {
-                if(basePO.getSource().equals(targetPO.getSource())) {
+                //if(basePO.getSource().equals(targetPO.getSource())) {
                     basePO.setTarget(targetPO.getTarget());
                     basePO.setFuzzy(targetPO.isFuzzy());
-                } else {
+                //} else {
                     if(isJapPO) {
                         basePO.setTarget(targetPO.getSource());
                     }
-                }
+                //}
             }
         }
     }

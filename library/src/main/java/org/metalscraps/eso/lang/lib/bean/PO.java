@@ -30,8 +30,8 @@ public class PO implements Comparable<PO> {
 	}
 
 	public PO(String id, String source, String target) {
-		source = source.replaceAll("\"\n\"", "");
-		target = target.replaceAll("\"\n\"", "");
+		//source = source.replaceAll("\"\n\"", "");
+		//target = target.replaceAll("\"\n\"", "");300
 
 		this.id = id;
 		this.source = source;
@@ -92,6 +92,24 @@ public class PO implements Comparable<PO> {
 		}
 
 		return "\""+id+"\",\""+(toCSVConfig.isWriteSource()?source:"")+"\",\""+translatedMsg+"\"\n";
+
+	}
+
+	public String toGoogleSpreadCSV(ToCSVConfig toCSVConfig) {
+		String translatedMsg = "";
+
+		if (toCSVConfig.isWriteFileName()) {
+			translatedMsg = (stringFileName + "_" + id2 + "_" + id3 + "_" + target);
+		} else if (toCSVConfig.isBeta()){
+			translatedMsg = target;
+		} else {
+			translatedMsg = target;
+			if(isFuzzy() || target.contains("-G-")){
+				translatedMsg = source;
+			}
+		}
+
+		return id+"\t"+(toCSVConfig.isWriteSource()?source:"")+"\t"+translatedMsg+"\n";
 
 	}
 
