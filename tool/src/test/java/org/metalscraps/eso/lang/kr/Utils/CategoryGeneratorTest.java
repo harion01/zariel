@@ -76,7 +76,23 @@ public class CategoryGeneratorTest {
     }
 
     @Test
-    public void parseMainCategorizedCSV() {
+    public void parseCSV() {
+        AppWorkConfig appWorkConfig = new AppWorkConfig();
+        JFileChooser jFileChooser = new JFileChooser();
+        File workDir = new File(jFileChooser.getCurrentDirectory().getAbsolutePath()+"/Elder Scrolls Online/EsoKR");
+        jFileChooser.setCurrentDirectory(workDir);
+        appWorkConfig.setBaseDirectory(workDir);
+        appWorkConfig.setZanataCategoryConfigDirectory(new File(appWorkConfig.getBaseDirectory()+"/ZanataCategory"));
+
+        CategoryGenerator CG = new CategoryGenerator(appWorkConfig);
+        if(CG.CategoryMap.size() ==0){
+            CG.GenCategoryConfigMap(appWorkConfig.getZanataCategoryConfigDirectory().toString()+"\\IndexMatch.txt");
+        }
+
+        System.out.println("Select Csv file for generate category.");
+        HashMap<String, PO> CSVMap = CG.GetSelectedCSVMap();
+
+
     }
 
     @Test

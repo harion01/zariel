@@ -30,7 +30,7 @@ public class CategoryGenerator {
     private final ArrayList<PO> sourceList = new ArrayList<>();
 
     @Getter(AccessLevel.PUBLIC)
-    private HashMap<String, CategoryCSV> CategoryMap = new HashMap<>();
+    public HashMap<String, CategoryCSV> CategoryMap = new HashMap<>();
 
     @Getter(AccessLevel.PUBLIC)
     private HashSet<CategoryCSV> CategorizedCSV = new HashSet<>();

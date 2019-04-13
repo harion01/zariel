@@ -229,16 +229,9 @@ class LangManager {
 	private void CustomPOmodify(CategoryCSV targetCSV){
 
 		HashMap<String, PO> targetPO = targetCSV.getPODataMap();
-
 		for(PO po : targetPO.values()){
 			if(po.getSource().equals(po.getTarget())){
 				po.setTarget("");
-			}
-			po.setTarget(po.getTarget().replace("\"\"", "\"") );
-			po.setSource(po.getSource().replace("\"\"", "\"") );
-			if(po.getSource().equals("\\\"")){
-				po.setSource("\\\\");
-				po.setTarget("\\\\");
 			}
 		}
 
@@ -255,9 +248,6 @@ class LangManager {
 				}
 			}
 		}
-
-
-
 	}
 
 
@@ -309,7 +299,7 @@ class LangManager {
 		} else if ("system".equals(type)){
 			splitLimit = 4000;
 		}
-		splitLimit = 99999999;
+
 		int fileCount = 0;
 		int appendCount = 0;
 		String splitFile = fileName;
