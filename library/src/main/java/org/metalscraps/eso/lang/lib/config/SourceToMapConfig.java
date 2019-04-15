@@ -23,8 +23,13 @@ public class SourceToMapConfig {
 			processItemName = true,
 			addFileNameToTitle = false,
 			toLowerCase = false,
+			isFillEmptyTrg = true,
 			removeComment;
 	private String prefix, suffix;
 	private Pattern pattern = null;
 	private PO.POWrapType poWrapType = PO.POWrapType.WRAP_ALL;
+
+	public void setIsFillEmptyTrg(boolean set){
+		this.isFillEmptyTrg = set;
+	}
 }

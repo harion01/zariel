@@ -58,6 +58,28 @@ public class LangManagerTest {
 
     }
 
+    @Test
+    public void parseZanataPOtest(){
+        CategoryGenerator originCG = new CategoryGenerator(appWorkConfig);
+        originCG.GenCategoryConfigMap(appWorkConfig.getZanataCategoryConfigDirectory().toString()+"\\IndexMatch.txt");
+
+
+
+        HashMap<String, PO> targetCSV = new HashMap<>();
+        Collection<File> fileList = FileUtils.listFiles(appWorkConfig.getPODirectory(), new String[]{"po"}, false);
+
+        for (File file : fileList) {
+
+            String fileName = FilenameUtils.getBaseName(file.getName());
+            // pregame 쪽 데이터
+            if (fileName.equals("00_EsoUI_Client") || fileName.equals("00_EsoUI_Pregame")) continue;
+            SourceToMapConfig config = new SourceToMapConfig().setFile(file).setPattern(AppConfig.POPattern);
+            config.setIsFillEmptyTrg(false);
+            targetCSV.putAll(Utils.sourceToMap(config));
+            //System.out.println("zanata po parsed ["+file+"] ");
+        }
+    }
+
 
     @Test
     public void genCatecoryCSV(){
@@ -101,8 +123,6 @@ public class LangManagerTest {
             }
         }
         System.out.println("merged count :"+mergedcount);
-
-
 
     }
 

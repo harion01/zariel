@@ -242,10 +242,15 @@ public class Utils {
         Matcher m = config.getPattern().matcher(source);
         boolean isPOPattern = config.getPattern() == (AppConfig.POPattern);
         while (m.find()) {
-            PO po = new PO(m.group(2), m.group(6), m.group(7)).wrap(config.getPrefix(), config.getSuffix(), config.getPoWrapType());
+            PO po = new PO(m.group(2), m.group(6), m.group(7), config.isFillEmptyTrg()).wrap(config.getPrefix(), config.getSuffix(), config.getPoWrapType());
             //po.setFileName(FileNames.fromString(fileName));
             po.setStringFileName(fileName);
             if(isPOPattern && m.group(1) != null && m.group(1).equals("#, fuzzy")) po.setFuzzy(true);
+
+            if(po.getId().equals("41714900-0-310")){
+                System.out.println("src["+po.getSource()+"] trg ["+po.getTarget()+"]");
+            }
+
             poMap.put(m.group(config.getKeyGroup()), po);
         }
 
@@ -282,14 +287,17 @@ public class Utils {
 
         if (config.isProcessText()) {
             if (config.isProcessItemName()) source = Objects.requireNonNull(source).replaceAll("\\^[\\w]+", ""); // 아이템 명 뒤의 기호 수정
-            source = Objects.requireNonNull(source)
-                    .replaceAll("\\\\(?!n)", "\\\\\\\\") // tip.pot-41714900-0-307 기타 등등 \ 이스케이프 문자 \n 제외하고 전부 \\로 이중 이스케이프
-                    .replaceAll("\\\\n", "\"\n\"\\\\n");  // "Lorem Ipsum is\nsimply" => "Lorem Ipsum is" + \n + "\\\\\nsimply" -> \n 자나타에서 \n 파싱 안됨
 
+            source = convertEscape(source);
         }
         //System.out.println("parsed ["+source+"]");
         return source;
 
+    }
+
+    public static String convertEscape(String origin){
+        return origin.replaceAll("\\\\(?!n)", "\\\\\\\\") // tip.pot-41714900-0-307 기타 등등 \ 이스케이프 문자 \n 제외하고 전부 \\로 이중 이스케이프
+                .replaceAll("\\\\n", "\"\n\"\\\\n");  // "Lorem Ipsum is\nsimply" => "Lorem Ipsum is" + \n + "\\\\\nsimply" -> \n 자나타에서 \n 파싱 안됨
     }
 
     private void processRun(String command, File directory) throws IOException, InterruptedException { processRun(command, ProcessBuilder.Redirect.INHERIT, directory); }

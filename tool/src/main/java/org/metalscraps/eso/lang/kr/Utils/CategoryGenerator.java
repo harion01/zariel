@@ -49,15 +49,20 @@ public class CategoryGenerator {
         GenSubCategory(CSVMap);
         GenMainCategory(CSVMap);
 
-        CategoryCSV bookCSV = null;
-        for(CategoryCSV oneCSV : this.getCategorizedCSV()){
+
+        for(CategoryCSV oneCSV : CategorizedCSV){
             if("book".equals(oneCSV.getZanataFileName())){
-                bookCSV = oneCSV;
+                GenBookSubCategory(oneCSV);
                 break;
             }
         }
 
-        GenBookSubCategory(bookCSV);
+        for(CategoryCSV oneCSV : CategorizedCSV) {
+            if ("set".equals(oneCSV.getZanataFileName())) {
+                GenSetSubCategory(oneCSV);
+                break;
+            }
+        }
     }
 
 
@@ -221,6 +226,73 @@ public class CategoryGenerator {
         ArrayList<CategoryCSV> CategorizedBookCsvList = GenUESPBookSubCategory( wc.GetUESPBookMap(), oneCSV);
         this.CategorizedCSV.addAll(CategorizedBookCsvList);
     }
+
+
+    private void
+    GenSetSubCategory(CategoryCSV setCSV) {
+        ArrayList<PO> setName = new ArrayList<>();
+        for(PO po : setCSV.getPODataMap().values()) {
+            if(po.getId1() == 38727365) {
+                setName.add(po);
+            }
+        }
+
+        for(CategoryCSV oneCsv : this.getCategorizedCSV()){
+            if(oneCsv.getZanataFileName().equals("skill")){
+                GenSetSkillCategory(setName, oneCsv);
+                break;
+            }
+        }
+
+    }
+
+    private void GenSetSkillCategory(ArrayList<PO> setName, CategoryCSV skillCSV) {
+        CategoryCSV setSkillCSV = new CategoryCSV();
+        setSkillCSV.setZanataFileName("SetItemSkill");
+        setSkillCSV.setType("skill");
+
+        System.out.println("gen set skill start. skill size ["+skillCSV.getPODataMap().size()+"]");
+
+        HashMap<String, String> skillNameMap = new HashMap<>();
+        for(PO po : skillCSV.getPODataMap().values()){
+            if(po.getId1() == 198758357){
+                skillNameMap.put(po.getSource(), po.getId());
+            }
+        }
+
+        ArrayList<String> skillNameArr = new ArrayList<>();
+        for(PO namePO : setName){
+            String skillNameID = skillNameMap.get(namePO.getSource());
+            if(skillNameID != null){
+                skillNameArr.add(skillNameID);
+            }else {
+                System.out.println("no id for ["+ namePO.getSource() +"]");
+            }
+        }
+
+        HashMap<String, PO> skillFullMap = skillCSV.getPODataMap();
+        for(String skillNameID : skillNameArr){
+            //System.out.println("skillName id["+skillNameID+"]");
+            String skillDescID = skillNameID.replaceAll("198758357", "132143172");
+            PO namePO = skillFullMap.get(skillNameID);
+            PO descPO = skillFullMap.get(skillDescID);
+            if(namePO != null && descPO !=null){
+                setSkillCSV.addPoIndex(skillNameID);
+                setSkillCSV.addPoIndex(skillDescID);
+                setSkillCSV.putPoData(skillNameID, namePO);
+                setSkillCSV.putPoData(skillDescID, descPO);
+                skillFullMap.remove(skillNameID);
+                skillFullMap.remove(skillDescID);
+            }
+        }
+
+        System.out.println("Set skill item size ["+setSkillCSV.getPODataMap().size()+"]");
+        System.out.println("gen set skill end. skill size ["+skillCSV.getPODataMap().size()+"]");
+
+        this.CategorizedCSV.add(setSkillCSV);
+    }
+
+
 
     private ArrayList<CategoryCSV> GenUESPBookSubCategory(HashMap<String, ArrayList<String>> BookNameMap, CategoryCSV BookCSV){
         ArrayList<CategoryCSV> bookList = new ArrayList<>();

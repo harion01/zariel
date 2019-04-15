@@ -30,8 +30,6 @@ public class PO implements Comparable<PO> {
 	}
 
 	public PO(String id, String source, String target) {
-		//source = source.replaceAll("\"\n\"", "");
-		//target = target.replaceAll("\"\n\"", "");300
 
 		this.id = id;
 		this.source = source;
@@ -44,6 +42,23 @@ public class PO implements Comparable<PO> {
 
 		if(target.equals("")) this.target = source;
 		else if(source.equals("")) this.source = target;
+	}
+
+	public PO(String id, String source, String target, boolean isFillEmptyTrg) {
+
+		this.id = id;
+		this.source = source;
+		this.target = target;
+
+		String[] ids = id.split("-");
+		id1 = Integer.parseInt(ids[0]);
+		id2 = Integer.parseInt(ids[1]);
+		id3 = Integer.parseInt(ids[2]);
+
+		if(isFillEmptyTrg) {
+			if (target.equals("")) this.target = source;
+			else if (source.equals("")) this.source = target;
+		}
 	}
 
 	private Integer id1, id2, id3;

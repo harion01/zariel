@@ -126,19 +126,11 @@ class LangManager {
 		HashSet<CategoryCSV> categorizedCSV = originCG.getCategorizedCSV();
 
 		CSVmerge merge = new CSVmerge();
-		HashMap<String, PO> targetCSV = new HashMap<>();
-		Collection<File> fileList = FileUtils.listFiles(appWorkConfig.getPODirectory(), new String[]{"po"}, false);
-		for (File file : fileList) {
-
-			String fileName = FilenameUtils.getBaseName(file.getName());
-			// pregame 쪽 데이터
-			if (fileName.equals("00_EsoUI_Client") || fileName.equals("00_EsoUI_Pregame")) continue;
-
-			targetCSV.putAll(Utils.sourceToMap(new SourceToMapConfig().setFile(file).setPattern(AppConfig.POPattern)));
-			System.out.println("zanata po parsed ["+file+"] ");
-		}
+		HashMap<String, PO> targetCSV = parseZanataPO(FileUtils.listFiles(appWorkConfig.getPODirectory(), new String[]{"po"}, false));
 
 		merge.MergeCSV(categorizedCSV, targetCSV, false);
+
+
 
 		for(CategoryCSV oneCSV : categorizedCSV){
 			CustomPOmodify(oneCSV);
@@ -159,6 +151,21 @@ class LangManager {
 			makePotFile(poList, true, oneCSV.getZanataFileName(), oneCSV.getType(), "trs", "ja", "po");
 		}
 
+	}
+
+	HashMap<String, PO> parseZanataPO(Collection<File> fileList){
+		HashMap<String, PO> targetCSV = new HashMap<>();
+		for (File file : fileList) {
+
+			String fileName = FilenameUtils.getBaseName(file.getName());
+			// pregame 쪽 데이터
+			if (fileName.equals("00_EsoUI_Client") || fileName.equals("00_EsoUI_Pregame")) continue;
+			SourceToMapConfig config = new SourceToMapConfig().setFile(file).setPattern(AppConfig.POPattern);
+			config.setIsFillEmptyTrg(false);
+			targetCSV.putAll(Utils.sourceToMap(config));
+			System.out.println("zanata po parsed ["+file+"] ");
+		}
+		return targetCSV;
 	}
 
 	void GenCSVforGoogleSheet(){
@@ -306,6 +313,7 @@ class LangManager {
 		StringBuilder sb = new StringBuilder();
 
 		for (PO p : sort) {
+
 			sb = builderMap.get(splitFile);
 			if (sb == null) {
 				sb = new StringBuilder(
@@ -338,27 +346,17 @@ class LangManager {
 			appendCount++;
 		}
 
-		for (StringBuilder Onesb : builderMap.values()) {
-			Pattern p = Pattern.compile("\\\\(?!n)");
-			Matcher m = p.matcher(Onesb);
-			String x = m.replaceAll("\\\\$0");
-			Onesb.delete(0, Onesb.length());
-			Onesb.append(x);
-		}
 
 		try {
 			for (Map.Entry<String, StringBuilder> entry : builderMap.entrySet()) {
-				String sbConv = entry.getValue().toString();
-				sbConv.replaceAll("\\\\(?!n)", "\\\\\\\\");
-				sbConv = sbConv.replaceAll("\\\\n", "\"\n\"\\\\n");
 				if("trs".equals(folder)) {
 					String path = appWorkConfig.getBaseDirectory() + "/" + folder + "/" + type + "/" + language + "/" + entry.getKey() + "." + fileExtension;
 					System.out.println("gen file ["+path+"]");
-					FileUtils.writeStringToFile(new File(path), sbConv, AppConfig.CHARSET);
+					FileUtils.writeStringToFile(new File(path), entry.getValue().toString(), AppConfig.CHARSET);
 				}else {
 					String path = appWorkConfig.getBaseDirectory() + "/" + folder + "/" + type + "/" + entry.getKey() + "." + fileExtension;
 					System.out.println("gen file ["+path+"]");
-					FileUtils.writeStringToFile(new File(path), sbConv, AppConfig.CHARSET);
+					FileUtils.writeStringToFile(new File(path), entry.getValue().toString(), AppConfig.CHARSET);
 				}
 			}
 		} catch (Exception e) {
@@ -441,17 +439,6 @@ class LangManager {
 	}
 
 
-
-
-	void makeNewLang(){
-		CategoryGenerator CG = new CategoryGenerator(appWorkConfig);
-		System.out.println("select eso client csv file");
-		HashMap<String, PO> originCSVMap = CG.GetSelectedCSVMap();
-		System.out.println("select csv file to merge");
-		HashMap<String, PO> zanataCSVMap = CG.GetSelectedCSVMap();
-
-
-	}
 
     void makeLang() {
 
