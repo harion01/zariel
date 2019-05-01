@@ -29,6 +29,7 @@ class ToolMain {
 		System.out.println("0. CSV To PO");
 		System.out.println("1. Zanata PO 다운로드");
 		System.out.println("2. PO 폰트 매핑/변환");
+		System.out.println("22. CN to KR");
 		System.out.println("3. CSV 생성");
 		System.out.println("4. 기존 번역물 합치기");
 		System.out.println("5. 다!");
@@ -50,6 +51,7 @@ class ToolMain {
 			case 0: lm.CsvToPo(); break;
 			case 1: Utils.downloadPOs(appWorkConfig); break;
 			case 2: Utils.convertKO_PO_to_CN(appWorkConfig); break;
+			case 22: Utils.convertCNtoKO(appWorkConfig); break;
 			case 3: lm.makeCSVs(); break;
 			case 4: lm.makeLang(); break;
 			case 5:
@@ -71,7 +73,7 @@ class ToolMain {
 			case 11: new TamrielTradeCentre(appWorkConfig).start(); break;
 			case 12: new Destinations(appWorkConfig).start(); break;
 			case 300: lm.GenZanataUploadSet(); break;
-			case 400: lm.GenCSVforGoogleSheet(); break;
+
 		}
 	}
 

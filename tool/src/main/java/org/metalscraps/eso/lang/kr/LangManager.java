@@ -20,6 +20,7 @@ import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -136,7 +137,7 @@ class LangManager {
 			CustomPOmodify(oneCSV);
 			HashMap<String, PO> mergedPO = oneCSV.getPODataMap();
 			ArrayList<PO> poList = new ArrayList<>(mergedPO.values());
-			makePotFile(poList, false, oneCSV.getZanataFileName(), oneCSV.getType(), "src", "ko", "pot");
+			//makePotFile(poList, false,  oneCSV.getZanataFileName(), oneCSV.getType(), "src", "ko", "pot");
 			makePotFile(poList, true, oneCSV.getZanataFileName(), oneCSV.getType(), "trs", "ko", "po");
 		}
 
@@ -153,6 +154,137 @@ class LangManager {
 
 	}
 
+	public void GenOldCsvIDList(){
+		LinkedList<File> fileLinkedList = new LinkedList<>();
+		JFileChooser jFileChooser = new JFileChooser();
+		jFileChooser.setMultiSelectionEnabled(false);
+		jFileChooser.setCurrentDirectory(appWorkConfig.getBaseDirectory());
+		jFileChooser.setFileFilter(new FileFilter() {
+			@Override
+			public boolean accept(File f) {
+				return FilenameUtils.getExtension(f.getName()).equals("csv") | f.isDirectory();
+			}
+
+			@Override
+			public String getDescription() {
+				return "*.csv";
+			}
+		});
+
+		while (jFileChooser.showOpenDialog(null) != JFileChooser.CANCEL_OPTION) {
+			jFileChooser.setCurrentDirectory(jFileChooser.getSelectedFile());
+			fileLinkedList.add(jFileChooser.getSelectedFile());
+		}
+
+		if (fileLinkedList.size() == 0){
+			System.out.println("no file selected!");
+			return;
+		}
+
+		ArrayList<String> indexArr = new ArrayList<>();
+		String outputFile = null;
+		try {
+			indexArr.addAll(Utils.CustomSourceToArray(fileLinkedList.get(0)));
+			outputFile = fileLinkedList.get(0).getPath() + "_ID.csv" ;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		StringBuilder fileStr = new StringBuilder();
+		for(String id : indexArr){
+			fileStr.append(id).append("\n");
+		}
+
+		try {
+
+			System.out.println("output file ["+outputFile+"]");
+			FileUtils.writeStringToFile(new File(outputFile), fileStr.toString(), AppConfig.CHARSET);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void GenNewDataCsvIDList() throws Exception {
+		LinkedList<File> fileLinkedList = new LinkedList<>();
+		JFileChooser jFileChooser = new JFileChooser();
+		jFileChooser.setMultiSelectionEnabled(false);
+		jFileChooser.setCurrentDirectory(appWorkConfig.getBaseDirectory());
+		jFileChooser.setFileFilter(new FileFilter() {
+			@Override
+			public boolean accept(File f) {
+				return FilenameUtils.getExtension(f.getName()).equals("csv") | f.isDirectory();
+			}
+
+			@Override
+			public String getDescription() {
+				return "*.csv";
+			}
+		});
+
+		//old version input
+		System.out.println("select prev version update id file");
+		while (jFileChooser.showOpenDialog(null) != JFileChooser.CANCEL_OPTION) {
+			jFileChooser.setCurrentDirectory(jFileChooser.getSelectedFile());
+			fileLinkedList.add(jFileChooser.getSelectedFile());
+		}
+
+		if (fileLinkedList.size() == 0){
+			System.out.println("no file selected!");
+			return;
+		}
+
+		ArrayList<String> prevArr = new ArrayList<>();
+		for(File file : fileLinkedList) {
+			System.out.println("old file [" + file.getPath() + "]");
+			String prevVersion = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
+			String prevSplit[] = prevVersion.split("\n");
+			for (String id : prevSplit) {
+				prevArr.add(id);
+			}
+		}
+
+		//next version input
+		fileLinkedList.clear();
+		System.out.println("select next version update id file");
+		while (jFileChooser.showOpenDialog(null) != JFileChooser.CANCEL_OPTION) {
+			jFileChooser.setCurrentDirectory(jFileChooser.getSelectedFile());
+			fileLinkedList.add(jFileChooser.getSelectedFile());
+		}
+
+		if (fileLinkedList.size() == 0){
+			System.out.println("no file selected!");
+			return;
+		}
+		System.out.println("new file ["+fileLinkedList.get(0).getPath()+"]");
+		String nextVersion = FileUtils.readFileToString(fileLinkedList.get(0), StandardCharsets.UTF_8);
+		String nextSplit[] = nextVersion.split("\n");
+		HashSet<String> nextIDset = new HashSet<>();
+		for(String id : nextSplit){
+			nextIDset.add(id);
+		}
+
+		//remove duplicate
+		for(String oldID : prevArr){
+			nextIDset.remove(oldID);
+		}
+
+		StringBuilder fileStr = new StringBuilder();
+		for(String newID : nextIDset) {
+			fileStr.append(newID).append("\n");
+		}
+
+		String outputFile = fileLinkedList.get(0).getPath()+"_new.csv";
+
+		try {
+
+			System.out.println("output file ["+outputFile+"]");
+			FileUtils.writeStringToFile(new File(outputFile), fileStr.toString(), AppConfig.CHARSET);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+
 	HashMap<String, PO> parseZanataPO(Collection<File> fileList){
 		HashMap<String, PO> targetCSV = new HashMap<>();
 		for (File file : fileList) {
@@ -168,72 +300,9 @@ class LangManager {
 		return targetCSV;
 	}
 
-	void GenCSVforGoogleSheet(){
-
-		CategoryGenerator originCG = new CategoryGenerator(appWorkConfig);
-		originCG.GenCategoryConfigMap(appWorkConfig.getZanataCategoryConfigDirectory().toString()+"\\IndexMatch.txt");
-		originCG.GenCategory();
-		HashSet<CategoryCSV> categorizedCSV = originCG.getCategorizedCSV();
 
 
-		System.out.println("Select Csv file for tras data gen");
-		HashMap<String, PO> targetCSV;
-		targetCSV = originCG.GetSelectedCSVMap();
-
-		CSVmerge merge = new CSVmerge();
-		merge.MergeCSV(categorizedCSV, targetCSV, false);
-
-		ArrayList<PO> skill = new ArrayList<>();
-		ArrayList<PO> system = new ArrayList<>();
-		ArrayList<PO> item = new ArrayList<>();
-		ArrayList<PO> story = new ArrayList<>();
-		ArrayList<PO> quest = new ArrayList<>();
-		ArrayList<PO> journal_subtitle = new ArrayList<>();
-		ArrayList<PO> book = new ArrayList<>();
-		for(CategoryCSV oneCSV : categorizedCSV){
-			System.out.println("one CSV ["+oneCSV.getZanataFileName()+"] type ["+oneCSV.getType()+"]");
-			if(oneCSV.getType().equals("skill")){
-				skill.addAll(oneCSV.getPODataMap().values());
-			}else if (oneCSV.getType().equals("item")){
-				item.addAll(oneCSV.getPODataMap().values());
-			}else if (oneCSV.getType().equals("story")){
-				for(PO onePO : oneCSV.getPODataMap().values()){
-					if(onePO.getSource().equals(onePO.getTarget())){
-						onePO.setTarget("Not translated");
-					}
-				}
-
-				story.addAll( oneCSV.getPODataMap().values());
-			}else if (oneCSV.getType().equals("book")){
-				for(PO onePO : oneCSV.getPODataMap().values()){
-					if(onePO.getSource().equals(onePO.getTarget())){
-						onePO.setTarget("Not translated");
-					}
-				}
-				book.addAll(oneCSV.getPODataMap().values());
-			}else {
-				for(PO onePO : oneCSV.getPODataMap().values()){
-					if(onePO.getSource().equals(onePO.getTarget())){
-						onePO.setTarget("Not translated");
-					}
-				}
-				system.addAll(oneCSV.getPODataMap().values());
-			}
-		}
-
-
-		ToCSVConfig csvConfig = new ToCSVConfig().setWriteSource(true);
-		csvConfig.setBeta(true);
-		Utils.makeGoogleSpreadCSVwithLog(new File(appWorkConfig.getBaseDirectory() + "/imsi_skill" + appWorkConfig.getTodayWithYear() + ".csv"), csvConfig, skill);
-		Utils.makeGoogleSpreadCSVwithLog(new File(appWorkConfig.getBaseDirectory() + "/imsi_story" + appWorkConfig.getTodayWithYear() + ".csv"), csvConfig, story);
-		Utils.makeGoogleSpreadCSVwithLog(new File(appWorkConfig.getBaseDirectory() + "/imsi_book" + appWorkConfig.getTodayWithYear() + ".csv"), csvConfig, book);
-		Utils.makeGoogleSpreadCSVwithLog(new File(appWorkConfig.getBaseDirectory() + "/imsi_item" + appWorkConfig.getTodayWithYear() + ".csv"), csvConfig, item);
-		Utils.makeGoogleSpreadCSVwithLog(new File(appWorkConfig.getBaseDirectory() + "/imsi_system" + appWorkConfig.getTodayWithYear() + ".csv"), csvConfig, system);
-
-	}
-
-
-	private void CustomPOmodify(CategoryCSV targetCSV){
+	public void CustomPOmodify(CategoryCSV targetCSV){
 
 		HashMap<String, PO> targetPO = targetCSV.getPODataMap();
 		for(PO po : targetPO.values()){
@@ -294,6 +363,7 @@ class LangManager {
 	void makePotFile(ArrayList<PO> origin, boolean outputTargetData , String fileName, String type, String folder, String language, String fileExtension) {
 		HashMap<String, StringBuilder> builderMap = new HashMap<>();
 		ArrayList<PO> sort =  reOrderAsMatchFirst(origin);
+		// to match src and trs item count, we have to fix the number of each file
 		int splitLimit = 0;
 		if("item".equals(type)){
 			splitLimit = 5000;
@@ -306,6 +376,7 @@ class LangManager {
 		} else if ("system".equals(type)){
 			splitLimit = 4000;
 		}
+
 
 		int fileCount = 0;
 		int appendCount = 0;
@@ -332,17 +403,18 @@ class LangManager {
 				);
 				builderMap.put(splitFile, sb);
 			}
+
 			if(appendCount > splitLimit) {
 				fileCount++;
 				splitFile = fileName + fileCount;
 				appendCount = 0;
 			}
+
 			if (outputTargetData) {
 				sb.append(p.toTranslatedPO());
 			} else {
 				sb.append(p.toPOT());
 			}
-
 			appendCount++;
 		}
 
@@ -350,11 +422,13 @@ class LangManager {
 		try {
 			for (Map.Entry<String, StringBuilder> entry : builderMap.entrySet()) {
 				if("trs".equals(folder)) {
-					String path = appWorkConfig.getBaseDirectory() + "/" + folder + "/" + type + "/" + language + "/" + entry.getKey() + "." + fileExtension;
+					//String path = appWorkConfig.getBaseDirectory() + "/" + folder + "/" + type + "/" + language + "/" + entry.getKey() + "." + fileExtension;
+					String path = appWorkConfig.getBaseDirectory() + "/" + folder +  "/" + language + "/("+type+")" + entry.getKey() + "." + fileExtension;
 					System.out.println("gen file ["+path+"]");
 					FileUtils.writeStringToFile(new File(path), entry.getValue().toString(), AppConfig.CHARSET);
 				}else {
-					String path = appWorkConfig.getBaseDirectory() + "/" + folder + "/" + type + "/" + entry.getKey() + "." + fileExtension;
+					//String path = appWorkConfig.getBaseDirectory() + "/" + folder + "/" + type + "/" + entry.getKey() + "." + fileExtension;
+					String path = appWorkConfig.getBaseDirectory() + "/" + folder +"/" + entry.getKey() + "." + fileExtension;
 					System.out.println("gen file ["+path+"]");
 					FileUtils.writeStringToFile(new File(path), entry.getValue().toString(), AppConfig.CHARSET);
 				}
@@ -513,6 +587,7 @@ class LangManager {
 
 		originList = Utils.sourceToArray(sourceToMapConfig.setFile(fileLinkedList.get(0)));
 		zanataPO = Utils.sourceToMap(sourceToMapConfig.setFile(fileLinkedList.get(1)));
+		/*
 		zanataPO.get("242841733-0-54340").setTarget(Utils.KOToCN("매지카 물약"));
 
 		zanataPO.remove("41714900-0-307");
@@ -535,7 +610,7 @@ class LangManager {
 		zanataPO.remove("41714900-0-361");
 		zanataPO.remove("41714900-0-363");
 		zanataPO.remove("41714900-0-364");
-
+	*/
 
 
 

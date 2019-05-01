@@ -20,12 +20,14 @@ import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.CRC32;
 import java.util.zip.Checksum;
 
@@ -204,6 +206,24 @@ public class Utils {
         }
     }
 
+    public static void convertCNtoKO(AppWorkConfig appWorkConfig) {
+
+        Collection<File> fileList = FileUtils.listFiles(appWorkConfig.getPODirectory(), new String[]{"txt"}, false);
+        for(File file : fileList){
+            System.out.println(file.getPath());
+        }
+
+
+        try {
+            for (File file : fileList) {
+                File po2 = new File(file.getAbsolutePath() + "2");
+                if(!po2.exists() || po2.length() <= 0) FileUtils.write(po2, Utils.CNtoKO(FileUtils.readFileToString(file, AppConfig.CHARSET)), AppConfig.CHARSET);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public static String KOToCN(String string) {
         char[] c = string.toCharArray();
         for(int i=0; i < c.length; i++) if (c[i] >= 0xAC00 && c[i] <= 0xEA00) c[i] -= 0x3E00;
@@ -246,15 +266,51 @@ public class Utils {
             //po.setFileName(FileNames.fromString(fileName));
             po.setStringFileName(fileName);
             if(isPOPattern && m.group(1) != null && m.group(1).equals("#, fuzzy")) po.setFuzzy(true);
-
-            if(po.getId().equals("41714900-0-310")){
-                System.out.println("src["+po.getSource()+"] trg ["+po.getTarget()+"]");
-            }
-
             poMap.put(m.group(config.getKeyGroup()), po);
         }
-
         return poMap;
+    }
+
+    public static ArrayList<String> CustomSourceToArray(File file) throws  Exception {
+        System.out.println("target : "+file.getName());
+        ArrayList<String> indexArr = new ArrayList<>();
+        String source = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
+
+        //System.out.println("source : "+source);
+        String id = null;
+
+        //update1
+        //Pattern CSVPattern = Pattern.compile("(.*)`(.*)`(.*)`(.*)`", Pattern.MULTILINE);
+        //update5,6,7,8
+        //Pattern CSVPattern = Pattern.compile("(.*), \"", Pattern.MULTILINE);
+        // id = subid[0]+"-"+subid[1]+"-"+subid[2];
+        //update9,10,11
+        //"21337012","0","3331","6743691","
+        //Pattern CSVPattern = Pattern.compile("\"(.*)\",\"(.*)\",\"(.*)\",\"(.*)\",\"", Pattern.MULTILINE);
+        //update 12~ curr
+        Pattern CSVPattern = Pattern.compile("\"()(([\\d]+?)-([\\d]+?)-([\\d]+?))\",\"([\\s\\S]*?)\",\"([\\s\\S]*?)\"\n", Pattern.MULTILINE);
+        //Pattern CategoryConfig = Pattern.compile ("FileName:(.*)((\\r\\n)|(\\n))isDuplicate:(.*)((\\r\\n)|(\\n))type:(.*)((\\r\\n)|(\\n))indexLinkCount:(.*)((\\r\\n)|(\\n))index:(.*)((\\r\\n)|(\\n))", Pattern.MULTILINE );
+
+        Matcher m = CSVPattern.matcher(source);
+        int count = 0;
+        int tenk =0;
+        while (m.find()) {
+            //System.out.println("group 1 ["+m.group(1)+"] group 2 ["+m.group(2)+"] group 3 ["+m.group(3)+"]");
+            //System.out.println("group 1 ["+m.group(1)+"] ");
+            id = m.group(1)+"-"+m.group(2)+"-"+m.group(3);
+            count++;
+
+            if(count == 10000){
+                tenk++;
+                System.out.println("tenk["+tenk+"]");
+                count = 0;
+            }
+
+            indexArr.add(id);
+        }
+        System.out.println("parse end");
+
+        return indexArr;
     }
 
     public static ArrayList<PO> sourceToArray(SourceToMapConfig config){
@@ -292,12 +348,13 @@ public class Utils {
         }
         //System.out.println("parsed ["+source+"]");
         return source;
-
     }
 
     public static String convertEscape(String origin){
         return origin.replaceAll("\\\\(?!n)", "\\\\\\\\") // tip.pot-41714900-0-307 기타 등등 \ 이스케이프 문자 \n 제외하고 전부 \\로 이중 이스케이프
-                .replaceAll("\\\\n", "\"\n\"\\\\n");  // "Lorem Ipsum is\nsimply" => "Lorem Ipsum is" + \n + "\\\\\nsimply" -> \n 자나타에서 \n 파싱 안됨
+                .replaceAll("\\\\n", "\"\n\"\\\\n")  // "Lorem Ipsum is\nsimply" => "Lorem Ipsum is" + \n + "\\\\\nsimply" -> \n 자나타에서 \n 파싱 안됨
+                .replaceAll("\\\\\"", "\"")
+                .replaceAll("\\\\\"", "\"");
     }
 
     private void processRun(String command, File directory) throws IOException, InterruptedException { processRun(command, ProcessBuilder.Redirect.INHERIT, directory); }

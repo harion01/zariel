@@ -6,6 +6,7 @@ import lombok.Getter;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.metalscraps.eso.lang.kr.bean.CategoryCSV;
+import org.metalscraps.eso.lang.kr.bean.UpdateCSV;
 import org.metalscraps.eso.lang.lib.bean.PO;
 import org.metalscraps.eso.lang.lib.config.AppConfig;
 import org.metalscraps.eso.lang.lib.config.AppWorkConfig;
@@ -17,6 +18,7 @@ import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -48,8 +50,6 @@ public class CategoryGenerator {
         HashMap<String, PO> CSVMap = GetSelectedCSVMap();
         GenSubCategory(CSVMap);
         GenMainCategory(CSVMap);
-
-
         for(CategoryCSV oneCSV : CategorizedCSV){
             if("book".equals(oneCSV.getZanataFileName())){
                 GenBookSubCategory(oneCSV);
@@ -63,6 +63,15 @@ public class CategoryGenerator {
                 break;
             }
         }
+
+        ArrayList<CategoryCSV> splitTargetList = new ArrayList<>();
+        for(CategoryCSV oneCSV : CategorizedCSV) {
+            if ("story".equals(oneCSV.getType())) {
+                splitTargetList.add(oneCSV);
+            }
+        }
+
+        SplitCategoryByUpdate(splitTargetList);
     }
 
 
@@ -70,6 +79,97 @@ public class CategoryGenerator {
 
         ParseMainCategorizedCSV(CSVMap);
     }
+
+    public void SplitCategoryByUpdate(ArrayList<CategoryCSV> fullCSVList){
+
+        ArrayList<UpdateCSV> updateCSVList = ParseUpdateID();
+
+        ArrayList<CategoryCSV> splitCsvList = new ArrayList<>();
+        for(CategoryCSV originCSV : fullCSVList) {
+            System.out.println("origin csv name ["+originCSV.getZanataFileName()+"] po count ["+originCSV.getPODataMap().size()+"]");
+            ArrayList<CategoryCSV> subsplitList = new ArrayList<>();
+            for(UpdateCSV oneUpdate : updateCSVList){
+                CategoryCSV splitCsv = new CategoryCSV();
+                splitCsv.setZanataFileName(oneUpdate.getUpdateName()+"-"+originCSV.getZanataFileName());
+                splitCsv.setType(originCSV.getType());
+                splitCsv.setLinkCount(originCSV.getLinkCount());
+                HashMap<String, PO> splitDataMap = new HashMap<>();
+                for(String id : oneUpdate.getPoIndexList()){
+                    PO po = originCSV.getPODataMap().get(id);
+                    if(po != null){
+                        splitDataMap.put(id,po);
+                        originCSV.getPODataMap().remove(id);
+                    }
+                }
+                splitCsv.setPODataMap(splitDataMap);
+                subsplitList.add(splitCsv);
+            }
+            System.out.println("origin csv name ["+originCSV.getZanataFileName()+"] po count ["+originCSV.getPODataMap().size()+"]");
+            for(CategoryCSV subCsv : subsplitList){
+                System.out.println("subsplit csv name ["+subCsv.getZanataFileName()+"] po count ["+subCsv.getPODataMap().size()+"]");
+            }
+
+            splitCsvList.addAll(subsplitList);
+        }
+
+        this.CategorizedCSV.addAll(splitCsvList);
+    }
+
+    public ArrayList<UpdateCSV>  ParseUpdateID() {
+        ArrayList<UpdateCSV> returnCSV = new ArrayList<>();
+
+        LinkedList<File> fileLinkedList = new LinkedList<>();
+        JFileChooser jFileChooser = new JFileChooser();
+        jFileChooser.setMultiSelectionEnabled(false);
+        jFileChooser.setCurrentDirectory(appWorkConfig.getBaseDirectory());
+        jFileChooser.setFileFilter(new FileFilter() {
+            @Override
+            public boolean accept(File f) {
+                return FilenameUtils.getExtension(f.getName()).equals("csv") | f.isDirectory();
+            }
+
+            @Override
+            public String getDescription() {
+                return "*.csv";
+            }
+        });
+
+        //old version input
+        System.out.println("select update id files");
+        while (jFileChooser.showOpenDialog(null) != JFileChooser.CANCEL_OPTION) {
+            jFileChooser.setCurrentDirectory(jFileChooser.getSelectedFile());
+            fileLinkedList.add(jFileChooser.getSelectedFile());
+        }
+
+        if (fileLinkedList.size() == 0){
+            System.out.println("no file selected!");
+            return null;
+        }
+
+        for(File file : fileLinkedList) {
+            ArrayList<String> idArr = new ArrayList<>();
+            System.out.println("version file [" + file.getPath() + "]");
+            String updateID = null;
+            try {
+                updateID = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
+            } catch (Exception ex){
+                ex.printStackTrace();
+            }
+
+            String idSplit[] = updateID.split("\n");
+            for (String id : idSplit) {
+                idArr.add(id);
+            }
+            String updateName = file.getName().substring(0,file.getName().indexOf("_"));
+            UpdateCSV upCSV = new UpdateCSV();
+            upCSV.setUpdateName(updateName);
+            upCSV.setPoIndexList(idArr);
+            returnCSV.add(upCSV);
+        }
+
+        return returnCSV;
+    }
+
 
     public void GenCategoryConfigMap(String indexFileName){
         File file = new File(indexFileName);
@@ -103,6 +203,48 @@ public class CategoryGenerator {
         UndefinedCategoryCSV.setLinkCount(0);
         CategoryMap.put("Undefined", UndefinedCategoryCSV);
     }
+
+    public HashMap<String, PO> GetSelectedOldCSVMap() {
+        // EsoExtractData.exe depot/eso.mnf export -a 0
+        // EsoExtractData.exe -l en_0124.lang -p
+
+        LinkedList<File> fileLinkedList = new LinkedList<>();
+        HashMap<String, PO> map = new HashMap<>();
+
+        JFileChooser jFileChooser = new JFileChooser();
+        jFileChooser.setMultiSelectionEnabled(false);
+        jFileChooser.setCurrentDirectory(appWorkConfig.getBaseDirectory());
+        jFileChooser.setFileFilter(new FileFilter() {
+            @Override
+            public boolean accept(File f) {
+                return FilenameUtils.getExtension(f.getName()).equals("csv") | f.isDirectory();
+            }
+
+            @Override
+            public String getDescription() {
+                return "*.csv";
+            }
+        });
+
+        while (jFileChooser.showOpenDialog(null) != JFileChooser.CANCEL_OPTION) {
+            jFileChooser.setCurrentDirectory(jFileChooser.getSelectedFile());
+            fileLinkedList.add(jFileChooser.getSelectedFile());
+        }
+
+        if (fileLinkedList.size() == 0){
+            System.out.println("no file selected!");
+            return map;
+        }
+
+        SourceToMapConfig sourceToMapConfig = new SourceToMapConfig().setPattern(AppConfig.CSVPattern);
+        for (File file : fileLinkedList) {
+            System.out.println(file);
+            map.putAll(Utils.sourceToMap(sourceToMapConfig.setFile(file)));
+        }
+
+        return map;
+    }
+
 
 
     public HashMap<String, PO> GetSelectedCSVMap() {
