@@ -1,7 +1,5 @@
 package org.metalscraps.eso.lang.kr.config;
 
-import lombok.AccessLevel;
-import lombok.Getter;
 import org.metalscraps.eso.lang.kr.bean.CategoryCSV;
 import org.metalscraps.eso.lang.lib.bean.PO;
 
@@ -10,7 +8,14 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 public class CSVmerge {
-    @Getter(AccessLevel.PUBLIC)
+    public HashMap<String, CategoryCSV> getMergedCSV() {
+        return mergedCSV;
+    }
+
+    public void setMergedCSV(HashMap<String, CategoryCSV> mergedCSV) {
+        this.mergedCSV = mergedCSV;
+    }
+
     private HashMap<String, CategoryCSV> mergedCSV = new HashMap<>();
 
     public void MergeCSV (HashSet<CategoryCSV> CategorizedClientCSV, HashMap<String, PO> targetPO, boolean isJapMerge){

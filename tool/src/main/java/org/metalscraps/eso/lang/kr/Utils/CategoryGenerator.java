@@ -1,8 +1,5 @@
 package org.metalscraps.eso.lang.kr.Utils;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.metalscraps.eso.lang.kr.bean.CategoryCSV;
@@ -25,18 +22,46 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.regex.Matcher;
 
-@AllArgsConstructor
+
 public class CategoryGenerator {
     private PoConverter PC = new PoConverter();
     private final AppWorkConfig appWorkConfig;
+
+    public PoConverter getPC() {
+        return PC;
+    }
+
+    public void setPC(PoConverter PC) {
+        this.PC = PC;
+    }
+
+    public AppWorkConfig getAppWorkConfig() {
+        return appWorkConfig;
+    }
+
+    public ArrayList<PO> getSourceList() {
+        return sourceList;
+    }
+
+    public HashMap<String, CategoryCSV> getCategoryMap() {
+        return CategoryMap;
+    }
+
+    public void setCategoryMap(HashMap<String, CategoryCSV> categoryMap) {
+        CategoryMap = categoryMap;
+    }
+
+    public HashSet<CategoryCSV> getCategorizedCSV() {
+        return CategorizedCSV;
+    }
+
+    public void setCategorizedCSV(HashSet<CategoryCSV> categorizedCSV) {
+        CategorizedCSV = categorizedCSV;
+    }
+
     private final ArrayList<PO> sourceList = new ArrayList<>();
-
-    @Getter(AccessLevel.PUBLIC)
     public HashMap<String, CategoryCSV> CategoryMap = new HashMap<>();
-
-    @Getter(AccessLevel.PUBLIC)
     private HashSet<CategoryCSV> CategorizedCSV = new HashSet<>();
-
     public CategoryGenerator(AppWorkConfig appWorkConfig) {
         this.appWorkConfig = appWorkConfig;
     }
@@ -236,10 +261,12 @@ public class CategoryGenerator {
             return map;
         }
 
-        SourceToMapConfig sourceToMapConfig = new SourceToMapConfig().setPattern(AppConfig.CSVPattern);
+        SourceToMapConfig sourceToMapConfig = new SourceToMapConfig();
+        sourceToMapConfig.setPattern(AppConfig.CSVPattern);
         for (File file : fileLinkedList) {
             System.out.println(file);
-            map.putAll(Utils.sourceToMap(sourceToMapConfig.setFile(file)));
+            sourceToMapConfig.setFile(file);
+            map.putAll(Utils.sourceToMap(sourceToMapConfig));
         }
 
         return map;
@@ -279,10 +306,11 @@ public class CategoryGenerator {
             return map;
         }
 
-        SourceToMapConfig sourceToMapConfig = new SourceToMapConfig().setPattern(AppConfig.CSVPattern);
+        SourceToMapConfig sourceToMapConfig = new SourceToMapConfig();
+        sourceToMapConfig.setPattern(AppConfig.CSVPattern);
         for (File file : fileLinkedList) {
             System.out.println(file);
-            map.putAll(Utils.sourceToMap(sourceToMapConfig.setFile(file)));
+            map.putAll(Utils.sourceToMap(sourceToMapConfig));
         }
         return map;
     }

@@ -25,7 +25,10 @@ public class PoConverter {
         Collection<File> fileList = FileUtils.listFiles(appWorkConfig.getPODirectory(), new String[]{"po"}, false);
         ArrayList<PO> LtransList = new ArrayList<>();
         for (File file : fileList) {
-            ArrayList<PO> fileItems = new ArrayList<>(Utils.sourceToMap(new SourceToMapConfig().setFile(file).setPattern(AppConfig.POPattern)).values());
+            SourceToMapConfig cfg = new SourceToMapConfig();
+            cfg.setFile(file);
+            cfg.setPattern(AppConfig.POPattern);
+            ArrayList<PO> fileItems = new ArrayList<>(Utils.sourceToMap(cfg).values());
             System.out.println("target : " + file);
 
             int requestCount = 0;
@@ -82,7 +85,10 @@ public class PoConverter {
         ArrayList<PO> LtransList = new ArrayList<>();
 
         for (File file : fileList) {
-            ArrayList<PO> fileItems = new ArrayList<>(Utils.sourceToMap(new SourceToMapConfig().setFile(file).setPattern(AppConfig.POPattern)).values());
+            SourceToMapConfig cfg = new SourceToMapConfig();
+            cfg.setFile(file);
+            cfg.setPattern(AppConfig.POPattern);
+            ArrayList<PO> fileItems = new ArrayList<>(Utils.sourceToMap(cfg).values());
             System.out.println("target : " + file);
             for (PO oneItem : fileItems) {
                 if (oneItem.getSource().equals(oneItem.getTarget())) {
@@ -103,7 +109,10 @@ public class PoConverter {
         ArrayList<PO> LtransList = new ArrayList<>();
 
         for (File file : fileList) {
-            ArrayList<PO> fileItems = new ArrayList<>(Utils.sourceToMap(new SourceToMapConfig().setFile(file).setPattern(AppConfig.POPattern)).values());
+            SourceToMapConfig cfg = new SourceToMapConfig();
+            cfg.setFile(file);
+            cfg.setPattern(AppConfig.POPattern);
+            ArrayList<PO> fileItems = new ArrayList<>(Utils.sourceToMap(cfg).values());
             System.out.println("target : " + file);
             for (PO oneItem : fileItems) {
                 oneItem.setFuzzy(true);

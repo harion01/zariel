@@ -1,15 +1,25 @@
 package org.metalscraps.eso.lang.kr.bean;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.util.ArrayList;
 
 public class UpdateCSV {
-    @Setter(AccessLevel.PUBLIC) @Getter(AccessLevel.PUBLIC)
-    private String updateName;
+    public String getUpdateName() {
+        return updateName;
+    }
 
-    @Setter(AccessLevel.PUBLIC) @Getter(AccessLevel.PUBLIC)
+    public void setUpdateName(String updateName) {
+        this.updateName = updateName;
+    }
+
+    public ArrayList<String> getPoIndexList() {
+        return PoIndexList;
+    }
+
+    public void setPoIndexList(ArrayList<String> poIndexList) {
+        PoIndexList = poIndexList;
+    }
+
+    private String updateName;
     ArrayList<String> PoIndexList = new ArrayList<>();
 }

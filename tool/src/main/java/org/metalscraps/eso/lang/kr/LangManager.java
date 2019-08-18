@@ -1,9 +1,7 @@
 package org.metalscraps.eso.lang.kr;
 
-import lombok.AllArgsConstructor;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.json.JSONObject;
 import org.metalscraps.eso.lang.kr.Utils.CategoryGenerator;
 import org.metalscraps.eso.lang.kr.Utils.PoConverter;
 import org.metalscraps.eso.lang.kr.bean.CategoryCSV;
@@ -30,7 +28,6 @@ import java.util.regex.Pattern;
  * Whya5448@gmail.com
  */
 
-@AllArgsConstructor
 class LangManager {
 	private PoConverter PC = new PoConverter();
 	private final AppWorkConfig appWorkConfig;
@@ -72,10 +69,12 @@ class LangManager {
 
 		if (fileLinkedList.size() == 0) return;
 
-		SourceToMapConfig sourceToMapConfig = new SourceToMapConfig().setPattern(AppConfig.CSVPattern);
+		SourceToMapConfig sourceToMapConfig = new SourceToMapConfig();
+		sourceToMapConfig.setPattern(AppConfig.CSVPattern);
 		for (File file : fileLinkedList) {
 			System.out.println(file);
-			map.putAll(Utils.sourceToMap(sourceToMapConfig.setFile(file)));
+			sourceToMapConfig.setFile(file);
+			map.putAll(Utils.sourceToMap(sourceToMapConfig));
 		}
 
 		Collection<File> fileList = FileUtils.listFiles(appWorkConfig.getPODirectory(), new String[]{"po"}, false);
@@ -89,8 +88,10 @@ class LangManager {
 			//249936564-0-5081 quest-sub.po """Captain""
 			//265851556-0-4666 journey.po ""Halion of Chrrol."" ~~
 			// 41714900-0-345|249936564-0-5081|265851556-0-4666
-
-			map2.putAll(Utils.sourceToMap(new SourceToMapConfig().setFile(file).setPattern(AppConfig.POPattern)));
+			SourceToMapConfig scrToMapCfg = new SourceToMapConfig();
+			scrToMapCfg.setFile(file);
+			scrToMapCfg.setPattern(AppConfig.POPattern);
+			map2.putAll(Utils.sourceToMap(scrToMapCfg));
 		}
 
 		for (PO p : map2.values()) {
@@ -292,7 +293,9 @@ class LangManager {
 			String fileName = FilenameUtils.getBaseName(file.getName());
 			// pregame 쪽 데이터
 			if (fileName.equals("00_EsoUI_Client") || fileName.equals("00_EsoUI_Pregame")) continue;
-			SourceToMapConfig config = new SourceToMapConfig().setFile(file).setPattern(AppConfig.POPattern);
+			SourceToMapConfig config = new SourceToMapConfig();
+			config.setFile(file);
+			config.setPattern(AppConfig.POPattern);
 			config.setIsFillEmptyTrg(false);
 			targetCSV.putAll(Utils.sourceToMap(config));
 			System.out.println("zanata po parsed ["+file+"] ");
@@ -505,11 +508,15 @@ class LangManager {
 
 		Collection<File> fileList = FileUtils.listFiles(appWorkConfig.getPODirectory(), new String[]{"po2"}, false);
 		ArrayList<PO> sourceList = Utils.getMergedPO(fileList);
-		ToCSVConfig csvConfig = new ToCSVConfig().setWriteSource(false);
+		ToCSVConfig csvConfig = new ToCSVConfig();
+		csvConfig.setWriteSource(false);
 
 		Utils.makeCSVwithLog(new File(appWorkConfig.getBaseDirectory() + "/kr_" + appWorkConfig.getTodayWithYear() + ".po2.csv"), csvConfig, sourceList);
-		Utils.makeCSVwithLog(new File(appWorkConfig.getBaseDirectory() + "/kr_beta_" + appWorkConfig.getTodayWithYear() + ".po2.csv"), csvConfig.setBeta(true), sourceList);
-		Utils.makeCSVwithLog(new File(appWorkConfig.getBaseDirectory() + "/tr_" + appWorkConfig.getTodayWithYear() + ".po2.csv"), csvConfig.setWriteFileName(true).setBeta(false), sourceList);
+		csvConfig.setBeta(true);
+		Utils.makeCSVwithLog(new File(appWorkConfig.getBaseDirectory() + "/kr_beta_" + appWorkConfig.getTodayWithYear() + ".po2.csv"), csvConfig, sourceList);
+		csvConfig.setWriteFileName(true);
+		csvConfig.setBeta(false);
+		Utils.makeCSVwithLog(new File(appWorkConfig.getBaseDirectory() + "/tr_" + appWorkConfig.getTodayWithYear() + ".po2.csv"), csvConfig, sourceList);
 	}
 
 
@@ -546,75 +553,14 @@ class LangManager {
 		}
 		if (fileLinkedList.size() != 2) return;
 
+		SourceToMapConfig sourceToMapConfig = new SourceToMapConfig();
+		sourceToMapConfig.setPattern(AppConfig.CSVPattern);
+		sourceToMapConfig.setFile(fileLinkedList.get(0));
+		originList = Utils.sourceToArray(sourceToMapConfig);
 
-		SourceToMapConfig sourceToMapConfig = new SourceToMapConfig().setPattern(AppConfig.CSVPattern);
-		//ko = Utils.sourceToMap(sourceToMapConfig.setFile(fileLinkedList.get(0)));
-
-
-
-		//ko.putAll(Utils.sourceToMap(sourceToMapConfig.setFile(fileLinkedList.get(1))));
-		//ko.get("242841733-0-54340").setTarget(Utils.KOToCN("매지카 물약"));
-
-		/*
-		HashMap<FileNames, HashMap<String, ArrayList<PO>>> motherMap = new HashMap<>();
-		for (PO p : ko.values()) {
-			HashMap<String, ArrayList<PO>> childMap;
-			ArrayList<PO> childList;
-
-			if (motherMap.containsKey(p.getFileName())) childMap = motherMap.get(p.getFileName());
-			else motherMap.put(p.getFileName(), childMap = new HashMap<>());
-
-			if (childMap.containsKey(p.getSource())) childList = childMap.get(p.getSource());
-			else childMap.put(p.getSource(), childList = new ArrayList<>());
-
-			childList.add(p);
-		}
-
-		for (HashMap<String, ArrayList<PO>> childMap : motherMap.values()) {
-			for (ArrayList<PO> childList : childMap.values()) {
-				PO p = null;
-				for (PO x : childList) if (!x.getSource().equals(x.getTarget())) p = x;
-				if (p != null)
-					for (PO x : childList) if (x.getSource().equals(x.getTarget())) x.setTarget(p.getTarget());
-			}
-		}
-
-
-		for (Map<String, ArrayList<PO>> childMap : motherMap.values())
-			for (List childList : childMap.values()) sourceList.addAll(childList);
-		sourceList.sort(null);
-*/
-
-		originList = Utils.sourceToArray(sourceToMapConfig.setFile(fileLinkedList.get(0)));
-		zanataPO = Utils.sourceToMap(sourceToMapConfig.setFile(fileLinkedList.get(1)));
-		/*
-		zanataPO.get("242841733-0-54340").setTarget(Utils.KOToCN("매지카 물약"));
-
-		zanataPO.remove("41714900-0-307");
-		zanataPO.remove("41714900-0-337");
-		zanataPO.remove("41714900-0-339");
-		zanataPO.remove("41714900-0-340");
-		zanataPO.remove("41714900-0-342");
-		zanataPO.remove("41714900-0-343");
-		zanataPO.remove("41714900-0-345");
-		zanataPO.remove("41714900-0-346");
-		zanataPO.remove("41714900-0-348");
-		zanataPO.remove("41714900-0-349");
-		zanataPO.remove("41714900-0-351");
-		zanataPO.remove("41714900-0-352");
-		zanataPO.remove("41714900-0-354");
-		zanataPO.remove("41714900-0-355");
-		zanataPO.remove("41714900-0-357");
-		zanataPO.remove("41714900-0-358");
-		zanataPO.remove("41714900-0-360");
-		zanataPO.remove("41714900-0-361");
-		zanataPO.remove("41714900-0-363");
-		zanataPO.remove("41714900-0-364");
-	*/
-
-
-
-		for(PO mergedPO : originList){
+		sourceToMapConfig.setFile(fileLinkedList.get(1));
+		zanataPO = Utils.sourceToMap(sourceToMapConfig);
+				for(PO mergedPO : originList){
 			PO target = zanataPO.get(mergedPO.getId());
 			if(target != null){
 				mergedPO.setSource(target.getSource());

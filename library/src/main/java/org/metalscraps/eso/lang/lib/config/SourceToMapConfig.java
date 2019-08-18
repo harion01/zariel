@@ -1,7 +1,4 @@
 package org.metalscraps.eso.lang.lib.config;
-
-import lombok.Data;
-import lombok.experimental.Accessors;
 import org.metalscraps.eso.lang.lib.bean.PO;
 
 import java.io.File;
@@ -12,9 +9,103 @@ import java.util.regex.Pattern;
  * Whya5448@gmail.com
  */
 
-@Data
-@Accessors(chain = true)
 public class SourceToMapConfig {
+
+	public File getFile() {
+		return file;
+	}
+
+	public void setFile(File file) {
+		this.file = file;
+	}
+
+	public int getKeyGroup() {
+		return keyGroup;
+	}
+
+	public void setKeyGroup(int keyGroup) {
+		this.keyGroup = keyGroup;
+	}
+
+	public boolean isProcessText() {
+		return processText;
+	}
+
+	public void setProcessText(boolean processText) {
+		this.processText = processText;
+	}
+
+	public boolean isProcessItemName() {
+		return processItemName;
+	}
+
+	public void setProcessItemName(boolean processItemName) {
+		this.processItemName = processItemName;
+	}
+
+	public boolean isAddFileNameToTitle() {
+		return addFileNameToTitle;
+	}
+
+	public void setAddFileNameToTitle(boolean addFileNameToTitle) {
+		this.addFileNameToTitle = addFileNameToTitle;
+	}
+
+	public boolean isToLowerCase() {
+		return toLowerCase;
+	}
+
+	public void setToLowerCase(boolean toLowerCase) {
+		this.toLowerCase = toLowerCase;
+	}
+
+	public boolean isFillEmptyTrg() {
+		return isFillEmptyTrg;
+	}
+
+	public void setFillEmptyTrg(boolean fillEmptyTrg) {
+		isFillEmptyTrg = fillEmptyTrg;
+	}
+
+	public boolean isRemoveComment() {
+		return removeComment;
+	}
+
+	public void setRemoveComment(boolean removeComment) {
+		this.removeComment = removeComment;
+	}
+
+	public String getPrefix() {
+		return prefix;
+	}
+
+	public void setPrefix(String prefix) {
+		this.prefix = prefix;
+	}
+
+	public String getSuffix() {
+		return suffix;
+	}
+
+	public void setSuffix(String suffix) {
+		this.suffix = suffix;
+	}
+
+	public Pattern getPattern() {
+		return pattern;
+	}
+
+	public void setPattern(Pattern pattern) {
+		this.pattern = pattern;
+	}
+
+	public PO.POWrapType getPoWrapType() {
+		return poWrapType;
+	}
+
+	public void setPoWrapType(PO.POWrapType poWrapType) {
+		this.poWrapType = poWrapType;
+	}
 
 	private File file = null;
 	private int keyGroup = 2;

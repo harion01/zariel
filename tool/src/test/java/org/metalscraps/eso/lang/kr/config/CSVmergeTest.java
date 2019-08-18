@@ -75,8 +75,10 @@ public class CSVmergeTest {
             String fileName = FilenameUtils.getBaseName(file.getName());
             // pregame 쪽 데이터
             if (fileName.equals("00_EsoUI_Client") || fileName.equals("00_EsoUI_Pregame")) continue;
-
-            targetCSV.putAll(Utils.sourceToMap(new SourceToMapConfig().setFile(file).setPattern(AppConfig.POPattern)));
+            SourceToMapConfig cfg = new SourceToMapConfig();
+            cfg.setFile(file);
+            cfg.setPattern(AppConfig.POPattern);
+            targetCSV.putAll(Utils.sourceToMap(cfg));
             System.out.println("zanata po parsed ["+file+"] ");
         }
 

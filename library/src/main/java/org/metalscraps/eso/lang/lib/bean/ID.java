@@ -1,20 +1,11 @@
 package org.metalscraps.eso.lang.lib.bean;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.experimental.Accessors;
-
-@Data
-@Accessors(chain = true)
-@AllArgsConstructor
-@NoArgsConstructor
 public class ID {
 
     public ID(String head, String body, String tail) {
-        setHead(head);
-        setBody(body);
-        setTail(tail);
+        this.head = head;
+        this.body = body;
+        this.tail = tail;
     }
 
     public void setHead(String head) {
@@ -25,10 +16,36 @@ public class ID {
     @Override
     public String toString() { return head+"-"+body+"-"+tail; }
 
+    public boolean isFileNameHead() {
+        return isFileNameHead;
+    }
+
+    public void setFileNameHead(boolean fileNameHead) {
+        isFileNameHead = fileNameHead;
+    }
+
+    public String getHead() {
+        return head;
+    }
+
+    public String getBody() {
+        return body;
+    }
+
+    public void setBody(String body) {
+        this.body = body;
+    }
+
+    public String getTail() {
+        return tail;
+    }
+
+    public void setTail(String tail) {
+        this.tail = tail;
+    }
+
     private boolean isFileNameHead;
-
     private String head, body, tail;
-
     public static class NotFileNameHead extends Exception {}
 
 }

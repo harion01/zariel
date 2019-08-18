@@ -75,9 +75,11 @@ public class LangManagerTest {
             String fileName = FilenameUtils.getBaseName(file.getName());
             // pregame 쪽 데이터
             if (fileName.equals("00_EsoUI_Client") || fileName.equals("00_EsoUI_Pregame")) continue;
-            SourceToMapConfig config = new SourceToMapConfig().setFile(file).setPattern(AppConfig.POPattern);
-            config.setIsFillEmptyTrg(false);
-            targetCSV.putAll(Utils.sourceToMap(config));
+            SourceToMapConfig cfg = new SourceToMapConfig();
+            cfg.setFile(file);
+            cfg.setPattern(AppConfig.POPattern);
+            cfg.setIsFillEmptyTrg(false);
+            targetCSV.putAll(Utils.sourceToMap(cfg));
             //System.out.println("zanata po parsed ["+file+"] ");
         }
     }
@@ -108,8 +110,10 @@ public class LangManagerTest {
             String fileName = FilenameUtils.getBaseName(file.getName());
             // pregame 쪽 데이터
             if (fileName.equals("00_EsoUI_Client") || fileName.equals("00_EsoUI_Pregame")) continue;
-
-            targetCSV.putAll(Utils.sourceToMap(new SourceToMapConfig().setFile(file).setPattern(AppConfig.POPattern)));
+            SourceToMapConfig cfg = new SourceToMapConfig();
+            cfg.setFile(file);
+            cfg.setPattern(AppConfig.POPattern);
+            targetCSV.putAll(Utils.sourceToMap(cfg));
             //System.out.println("zanata po parsed ["+file+"] ");
         }
 

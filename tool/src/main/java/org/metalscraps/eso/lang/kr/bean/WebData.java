@@ -1,9 +1,5 @@
 package org.metalscraps.eso.lang.kr.bean;
 
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -12,22 +8,64 @@ import org.metalscraps.eso.lang.kr.config.WebPageNames;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-@Data
 public class WebData{
 	public WebData(){
 
 	}
-	@Setter(AccessLevel.PUBLIC) @Getter(AccessLevel.PUBLIC)
+
+	public String getItemFileName() {
+		return ItemFileName;
+	}
+
+	public void setItemFileName(String itemFileName) {
+		ItemFileName = itemFileName;
+	}
+
+	public String getItemURL() {
+		return ItemURL;
+	}
+
+	public void setItemURL(String itemURL) {
+		ItemURL = itemURL;
+	}
+
+	public WebPageNames getPageName() {
+		return PageName;
+	}
+
+	public void setPageName(WebPageNames pageName) {
+		PageName = pageName;
+	}
+
+	public Document getHTML() {
+		return HTML;
+	}
+
+	public void setHTML(Document HTML) {
+		this.HTML = HTML;
+	}
+
+	public Elements getWebTables() {
+		return WebTables;
+	}
+
+	public void setWebTables(Elements webTables) {
+		WebTables = webTables;
+	}
+
+	public HashMap<String, ArrayList<String>> getBookMap() {
+		return bookMap;
+	}
+
+	public void setBookMap(HashMap<String, ArrayList<String>> bookMap) {
+		this.bookMap = bookMap;
+	}
+
 	private String ItemFileName, ItemURL;
-
-	@Setter(AccessLevel.PUBLIC) @Getter(AccessLevel.PUBLIC)
 	private WebPageNames PageName;
-
-	@Setter(AccessLevel.PUBLIC) @Getter(AccessLevel.PUBLIC)
 	private Document HTML;
-
-	@Setter(AccessLevel.PUBLIC) @Getter(AccessLevel.PUBLIC)
 	private Elements WebTables = null;
+	private HashMap<String, ArrayList<String>> bookMap = null;
 
 	public void addWebTable(Element table){
 		if(this.WebTables == null){
@@ -35,9 +73,6 @@ public class WebData{
 		}
 		this.WebTables.add(table);
 	}
-
-	@Getter
-	private HashMap<String, ArrayList<String>> bookMap = null;
 
 	public void putBookMap(String category, ArrayList<String> titles){
 		if(this.bookMap == null){

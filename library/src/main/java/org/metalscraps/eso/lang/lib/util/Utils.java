@@ -463,7 +463,10 @@ public class Utils {
             String fileName = FilenameUtils.getBaseName(file.getName());
             // pregame 쪽 데이터
             if (fileName.equals("00_EsoUI_Client") || fileName.equals("00_EsoUI_Pregame")) continue;
-            sourceList.addAll(Utils.sourceToMap(new SourceToMapConfig().setFile(file).setPattern(AppConfig.POPattern)).values());
+            SourceToMapConfig srcToMapCfg = new SourceToMapConfig();
+            srcToMapCfg.setFile(file);
+            srcToMapCfg.setPattern(AppConfig.POPattern);
+            sourceList.addAll(Utils.sourceToMap(srcToMapCfg).values());
             logger.trace(file.toString());
         }
         sourceList.sort(PO.comparator);

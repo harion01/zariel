@@ -1,8 +1,5 @@
 package org.metalscraps.eso.lang.lib.config;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-
 /**
  * Created by 안병길 on 2018-01-20.
  * Whya5448@gmail.com
@@ -68,7 +65,15 @@ public enum FileNames {
 	trap("trap", "tr"),
 	treasureMap("treasure-map", "tre-map");
 
-	@Getter(AccessLevel.PUBLIC)
+
+	public String getName() {
+		return name;
+	}
+
+	public String getShortName() {
+		return shortName;
+	}
+
 	private final String name, shortName;
 
 	FileNames(String name) {

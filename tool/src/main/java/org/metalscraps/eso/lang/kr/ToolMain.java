@@ -1,7 +1,5 @@
 package org.metalscraps.eso.lang.kr;
 
-import lombok.Getter;
-import org.metalscraps.eso.lang.kr.Utils.CategoryGenerator;
 import org.metalscraps.eso.lang.lib.config.AppWorkConfig;
 import org.metalscraps.eso.lang.lib.util.Utils;
 
@@ -27,21 +25,18 @@ class ToolMain {
 
 	private void showMessage() {
 		System.out.println("0. CSV To PO");
-		System.out.println("1. Zanata PO 다운로드");
-		System.out.println("2. PO 폰트 매핑/변환");
+		System.out.println("1. Zanata PO download");
+		System.out.println("2. PO pont mapping");
 		System.out.println("22. CN to KR");
-		System.out.println("3. CSV 생성");
-		System.out.println("4. 기존 번역물 합치기");
+		System.out.println("3. CSV generate");
+		System.out.println("4. Merge csv (existing & generated)");
 		System.out.println("5. 다!");
-		System.out.print("6. 작업폴더 변경 ");
+		System.out.print("6. change work folder ");
 		System.out.println(appWorkConfig.getBaseDirectory());
-		System.out.print("7. PO 폴더 변경 ");
+		System.out.print("7. change PO folder ");
 		System.out.println(appWorkConfig.getPODirectory());
 		System.out.println("9. 종료");
-		System.out.println("11. TTC");
-		System.out.println("12. Destinations");
-		System.out.println("300. Zanata upload용 csv category 생성");
-		System.out.println("400. Google sheet upload용 csv category 생성");
+		System.out.println("300. generate csv category for Zanata upload");
 	}
 
 	private void workLangManager(JFileChooser jFileChooser) {
@@ -70,8 +65,6 @@ class ToolMain {
 				appWorkConfig.setPODirectory(jFileChooser.getSelectedFile());
 				break;
 			case 9: System.exit(0);
-			case 11: new TamrielTradeCentre(appWorkConfig).start(); break;
-			case 12: new Destinations(appWorkConfig).start(); break;
 			case 300: lm.GenZanataUploadSet(); break;
 
 		}

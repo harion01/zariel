@@ -1,9 +1,5 @@
 package org.metalscraps.eso.lang.lib.bean;
 
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 import org.metalscraps.eso.lang.lib.config.FileNames;
 
 import java.util.Comparator;
@@ -14,10 +10,89 @@ import java.util.Objects;
  * Whya5448@gmail.com
  */
 
-@Data
 public class PO implements Comparable<PO> {
 
-    public static Comparator<PO> comparator = (o1, o2) -> {
+	public static Comparator<PO> getComparator() {
+		return comparator;
+	}
+
+	public static void setComparator(Comparator<PO> comparator) {
+		PO.comparator = comparator;
+	}
+
+	public Integer getId1() {
+		return id1;
+	}
+
+	public void setId1(Integer id1) {
+		this.id1 = id1;
+	}
+
+	public Integer getId2() {
+		return id2;
+	}
+
+	public void setId2(Integer id2) {
+		this.id2 = id2;
+	}
+
+	public Integer getId3() {
+		return id3;
+	}
+
+	public void setId3(Integer id3) {
+		this.id3 = id3;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getSource() {
+		return source;
+	}
+
+	public void setSource(String source) {
+		this.source = source;
+	}
+
+	public String getTarget() {
+		return target;
+	}
+
+	public void setTarget(String target) {
+		this.target = target;
+	}
+
+	public String getStringFileName() {
+		return stringFileName;
+	}
+
+	public void setStringFileName(String stringFileName) {
+		this.stringFileName = stringFileName;
+	}
+
+	public boolean isFuzzy() {
+		return fuzzy;
+	}
+
+	public void setFuzzy(boolean fuzzy) {
+		this.fuzzy = fuzzy;
+	}
+
+	public FileNames getFileName() {
+		return fileName;
+	}
+
+	public void setFileName(FileNames fileName) {
+		this.fileName = fileName;
+	}
+
+	public static Comparator<PO> comparator = (o1, o2) -> {
         if(!Objects.equals(o1.getId1(), o2.getId1())) return o1.getId1() - o2.getId1();
         if(!Objects.equals(o1.getId2(), o2.getId2())) return o1.getId2() - o2.getId2();
         return o1.getId3() - o2.getId3();
@@ -62,8 +137,6 @@ public class PO implements Comparable<PO> {
 	}
 
 	private Integer id1, id2, id3;
-
-	@Setter(AccessLevel.PUBLIC) @Getter(AccessLevel.PUBLIC)
 	private String id, source, target, stringFileName;
 	private boolean fuzzy = false;
 	private FileNames fileName;
