@@ -85,21 +85,27 @@ class ServerMain {
         try {
             if(!lang.exists() && lang.length() <= 0) {
                 for (File file : fileList) {
-                    sourceList.addAll(Utils.sourceToMap(new SourceToMapConfig().setFile(file).setPattern(AppConfig.POPattern)).values());
+                    SourceToMapConfig srcCfg = new SourceToMapConfig();
+                    srcCfg.setFile(file);
+                    srcCfg.setPattern(AppConfig.POPattern);
+                    sourceList.addAll(Utils.sourceToMap(srcCfg).values());
                     logger.trace("sourceToMap "+file.toString());
                 }
 
-                ToCSVConfig csvConfig = new ToCSVConfig().setWriteSource(false);
+                ToCSVConfig csvConfig = new ToCSVConfig();
+                csvConfig.setWriteSource(false);
                 sourceList.sort(null);
 
                 LocalTime timeTaken = LocalTime.now();
                 Utils.makeCSV(new File(appWorkConfig.getPODirectory() + "/kr.csv"), csvConfig, sourceList);
                 logger.info("kr.csv " + timeTaken.until(LocalTime.now(), ChronoUnit.SECONDS) + "초");
                 timeTaken = LocalTime.now();
-                Utils.makeCSV(new File(appWorkConfig.getPODirectory() + "/kr_beta.csv"), csvConfig.setBeta(true), sourceList);
+                csvConfig.setBeta(true);
+                Utils.makeCSV(new File(appWorkConfig.getPODirectory() + "/kr_beta.csv"), csvConfig, sourceList);
                 logger.info("kr_beta.csv " + timeTaken.until(LocalTime.now(), ChronoUnit.SECONDS) + "초");
                 timeTaken = LocalTime.now();
-                Utils.makeCSV(new File(appWorkConfig.getPODirectory() + "/tr.csv"), csvConfig.setWriteFileName(true), sourceList);
+                csvConfig.setWriteFileName(true);
+                Utils.makeCSV(new File(appWorkConfig.getPODirectory() + "/tr.csv"), csvConfig, sourceList);
                 logger.info("tr.csv " + timeTaken.until(LocalTime.now(), ChronoUnit.SECONDS) + "초");
             }
 

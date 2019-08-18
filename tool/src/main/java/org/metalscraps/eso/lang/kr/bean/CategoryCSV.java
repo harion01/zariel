@@ -1,25 +1,42 @@
 package org.metalscraps.eso.lang.kr.bean;
 
 
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+
 import org.metalscraps.eso.lang.lib.bean.PO;
 
 import java.util.ArrayList;
 
-@Data
+
 public class CategoryCSV {
 
-	@Setter(AccessLevel.PUBLIC) @Getter(AccessLevel.PUBLIC)
+
 	private String Category;
+	private ArrayList<String> PoIndexList, CSVList = null;
+	private ArrayList<PO> PODataList = null;
 
-	@Setter(AccessLevel.PUBLIC) @Getter(AccessLevel.PUBLIC)
-	ArrayList<String> PoIndexList, CSVList = null;
+	public ArrayList<String> getPoIndexList() {
+		return PoIndexList;
+	}
 
-	@Setter(AccessLevel.PUBLIC) @Getter(AccessLevel.PUBLIC)
-	ArrayList<PO> PODataList = null;
+	public void setPoIndexList(ArrayList<String> poIndexList) {
+		PoIndexList = poIndexList;
+	}
+
+	public ArrayList<String> getCSVList() {
+		return CSVList;
+	}
+
+	public void setCSVList(ArrayList<String> CSVList) {
+		this.CSVList = CSVList;
+	}
+
+	public ArrayList<PO> getPODataList() {
+		return PODataList;
+	}
+
+	public void setPODataList(ArrayList<PO> PODataList) {
+		this.PODataList = PODataList;
+	}
 
 
 	public void addPoIndex(String Index){
@@ -41,5 +58,14 @@ public class CategoryCSV {
 			this.PODataList = new ArrayList<>();
 		}
 		PODataList.add(po);
+	}
+
+
+	public String getCategory() {
+		return Category;
+	}
+
+	public void setCategory(String category) {
+		Category = category;
 	}
 }

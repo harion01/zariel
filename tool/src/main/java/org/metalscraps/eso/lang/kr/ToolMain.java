@@ -80,9 +80,6 @@ class ToolMain {
                 Runtime.getRuntime().gc();
                 break;
 			case 9: System.exit(0);
-			case 11: new TamrielTradeCentre(appWorkConfig).start(); break;
-			case 12: new Destinations(appWorkConfig).start(); break;
-			case 100: lm.translateGoogle(); break;
 			case 200: CG.GenSkillCategory();
 
 		}

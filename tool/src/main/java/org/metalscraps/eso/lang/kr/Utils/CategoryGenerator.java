@@ -1,6 +1,6 @@
 package org.metalscraps.eso.lang.kr.Utils;
 
-import lombok.AllArgsConstructor;
+
 import org.apache.commons.io.FilenameUtils;
 import org.metalscraps.eso.lang.kr.bean.CategoryCSV;
 import org.metalscraps.eso.lang.lib.bean.PO;
@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-@AllArgsConstructor
+
 public class CategoryGenerator {
     private PoConverter PC = new PoConverter();
     private final AppWorkConfig appWorkConfig;
@@ -88,10 +88,12 @@ public class CategoryGenerator {
             return map;
         }
 
-        SourceToMapConfig sourceToMapConfig = new SourceToMapConfig().setPattern(AppConfig.CSVPattern);
+        SourceToMapConfig sourceToMapConfig = new SourceToMapConfig();
+        sourceToMapConfig.setPattern(AppConfig.CSVPattern);
         for (File file : fileLinkedList) {
             System.out.println(file);
-            map.putAll(Utils.sourceToMap(sourceToMapConfig.setFile(file)));
+            sourceToMapConfig.setFile(file);
+            map.putAll(Utils.sourceToMap(sourceToMapConfig));
         }
 
 

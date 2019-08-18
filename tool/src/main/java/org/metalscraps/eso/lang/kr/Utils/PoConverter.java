@@ -26,7 +26,10 @@ public class PoConverter {
             ArrayList<PO> LtransList = new ArrayList<>();
             for (File file : fileList) {
                 ArrayList<PO> fileItems = new ArrayList<>();
-                fileItems.addAll(Utils.sourceToMap(new SourceToMapConfig().setFile(file).setPattern(AppConfig.POPattern)).values());
+                SourceToMapConfig srcToMapCfg = new SourceToMapConfig();
+                srcToMapCfg.setFile(file);
+                srcToMapCfg.setPattern(AppConfig.POPattern);
+                fileItems.addAll(Utils.sourceToMap(srcToMapCfg).values());
                 System.out.println("target : " + file);
 
                 int requestCount = 0;

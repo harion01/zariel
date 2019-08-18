@@ -1,6 +1,5 @@
 package org.metalscraps.eso.lang.kr;
 
-import lombok.AllArgsConstructor;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.json.JSONObject;
@@ -26,7 +25,7 @@ import java.util.regex.Pattern;
  * Whya5448@gmail.com
  */
 
-@AllArgsConstructor
+
 class LangManager {
 	private PoConverter PC = new PoConverter();
 	private final AppWorkConfig appWorkConfig;
@@ -68,10 +67,12 @@ class LangManager {
 
 		if (fileLinkedList.size() == 0) return;
 
-		SourceToMapConfig sourceToMapConfig = new SourceToMapConfig().setPattern(AppConfig.CSVPattern);
+		SourceToMapConfig sourceToMapConfig = new SourceToMapConfig();
+		sourceToMapConfig.setPattern(AppConfig.CSVPattern);
 		for (File file : fileLinkedList) {
 			System.out.println(file);
-			map.putAll(Utils.sourceToMap(sourceToMapConfig.setFile(file)));
+			sourceToMapConfig.setFile(file);
+			map.putAll(Utils.sourceToMap(sourceToMapConfig));
 		}
 
 		Collection<File> fileList = FileUtils.listFiles(appWorkConfig.getPODirectory(), new String[]{"po"}, false);
@@ -86,7 +87,10 @@ class LangManager {
 			//265851556-0-4666 journey.po ""Halion of Chrrol."" ~~
 			// 41714900-0-345|249936564-0-5081|265851556-0-4666
 
-			map2.putAll(Utils.sourceToMap(new SourceToMapConfig().setFile(file).setPattern(AppConfig.POPattern)));
+			SourceToMapConfig srcCfg = new SourceToMapConfig();
+			srcCfg.setFile(file);
+			srcCfg.setPattern(AppConfig.POPattern);
+			map2.putAll(Utils.sourceToMap(srcCfg));
 		}
 
 		for (PO p : map2.values()) {
@@ -189,17 +193,24 @@ class LangManager {
 			//265851556-0-4666 journey.po ""Halion of Chrrol."" ~~
 			// 41714900-0-345|249936564-0-5081|265851556-0-4666
 
-			sourceList.addAll(Utils.sourceToMap(new SourceToMapConfig().setFile(file).setPattern(AppConfig.POPattern)).values());
+			SourceToMapConfig srcToMapCfg = new SourceToMapConfig();
+			srcToMapCfg.setFile(file);
+			srcToMapCfg.setPattern(AppConfig.POPattern);
+			sourceList.addAll(Utils.sourceToMap(srcToMapCfg).values());
 			System.out.println(file);
 
 		}
 
-		ToCSVConfig csvConfig = new ToCSVConfig().setWriteSource(true);
+		ToCSVConfig csvConfig = new ToCSVConfig();
+		csvConfig.setWriteSource(true);
 		sourceList.sort(null);
 
 		Utils.makeCSV(new File(appWorkConfig.getBaseDirectory() + "/kr_" + appWorkConfig.getTodayWithYear() + (usePO2?".po2":".po") + ".csv"), csvConfig, sourceList);
-		Utils.makeCSV(new File(appWorkConfig.getBaseDirectory() + "/kr_beta_" + appWorkConfig.getTodayWithYear() + (usePO2?".po2":".po") + ".csv"), csvConfig.setBeta(true), sourceList);
-		Utils.makeCSV(new File(appWorkConfig.getBaseDirectory() + "/tr_" + appWorkConfig.getTodayWithYear() + (usePO2?".po2":".po") + ".csv"), csvConfig.setWriteFileName(true).setBeta(false), sourceList);
+		csvConfig.setBeta(true);
+		Utils.makeCSV(new File(appWorkConfig.getBaseDirectory() + "/kr_beta_" + appWorkConfig.getTodayWithYear() + (usePO2?".po2":".po") + ".csv"), csvConfig, sourceList);
+		csvConfig.setWriteFileName(true);
+		csvConfig.setBeta(false);
+		Utils.makeCSV(new File(appWorkConfig.getBaseDirectory() + "/tr_" + appWorkConfig.getTodayWithYear() + (usePO2?".po2":".po") + ".csv"), csvConfig, sourceList);
 
 	}
 
@@ -234,10 +245,12 @@ class LangManager {
 
 		if (fileLinkedList.size() == 0) return;
 
-		SourceToMapConfig sourceToMapConfig = new SourceToMapConfig().setPattern(AppConfig.CSVPattern);
+		SourceToMapConfig sourceToMapConfig = new SourceToMapConfig();
+		sourceToMapConfig.setPattern(AppConfig.CSVPattern);
 		for (File file : fileLinkedList) {
 			System.out.println(file);
-			map.putAll(Utils.sourceToMap(sourceToMapConfig.setFile(file)));
+			sourceToMapConfig.setFile(file);
+			map.putAll(Utils.sourceToMap(sourceToMapConfig));
 		}
 
 		JSONObject jsonObject = new JSONObject();
@@ -285,10 +298,12 @@ class LangManager {
         }
         if (fileLinkedList.size() != 2) return;
 
-        SourceToMapConfig sourceToMapConfig = new SourceToMapConfig().setPattern(AppConfig.CSVPattern);
-
-        ko = Utils.sourceToMap(sourceToMapConfig.setFile(fileLinkedList.get(0)));
-        ko.putAll(Utils.sourceToMap(sourceToMapConfig.setFile(fileLinkedList.get(1))));
+        SourceToMapConfig sourceToMapConfig = new SourceToMapConfig();
+		sourceToMapConfig.setPattern(AppConfig.CSVPattern);
+		sourceToMapConfig.setFile(fileLinkedList.get(0));
+        ko = Utils.sourceToMap(sourceToMapConfig);
+		sourceToMapConfig.setFile(fileLinkedList.get(1));
+        ko.putAll(Utils.sourceToMap(sourceToMapConfig));
 
         ko.get("242841733-0-54340").setTarget(Utils.KOToCN("매지카 물약"));
 

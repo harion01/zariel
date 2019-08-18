@@ -1,8 +1,5 @@
 package org.metalscraps.eso.lang.lib.config;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.io.File;
 import java.time.LocalDateTime;
@@ -22,12 +19,40 @@ public class AppWorkConfig {
 	}
 
 
-	@Getter(AccessLevel.PUBLIC) @Setter(AccessLevel.PUBLIC)
 	private File baseDirectory, PODirectory;
 
-	@Getter(AccessLevel.PUBLIC)
+	public String getToday() {
+		return today;
+	}
+
 	private final String today, todayWithYear;
 
-	@Getter(AccessLevel.PUBLIC)
+	public LocalDateTime getDateTime() {
+		return dateTime;
+	}
+
 	private LocalDateTime dateTime = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
+
+
+	public File getBaseDirectory() {
+		return baseDirectory;
+	}
+
+	public void setBaseDirectory(File baseDirectory) {
+		this.baseDirectory = baseDirectory;
+	}
+
+	public File getPODirectory() {
+		return PODirectory;
+	}
+
+	public void setPODirectory(File PODirectory) {
+		this.PODirectory = PODirectory;
+	}
+
+	public String getTodayWithYear() {
+		return todayWithYear;
+	}
+
+
 }

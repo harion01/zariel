@@ -1,9 +1,5 @@
 package org.metalscraps.eso.lang.lib.bean;
 
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 import org.metalscraps.eso.lang.lib.config.AppConfig;
 import org.metalscraps.eso.lang.lib.config.FileNames;
 
@@ -12,8 +8,53 @@ import org.metalscraps.eso.lang.lib.config.FileNames;
  * Whya5448@gmail.com
  */
 
-@Data
+
 public class PO implements Comparable {
+
+	public boolean isFuzzy() {
+		return fuzzy;
+	}
+
+	public void setFuzzy(boolean fuzzy) {
+		this.fuzzy = fuzzy;
+	}
+
+	public void setStringFileName(String stringFileName) {
+		this.stringFileName = stringFileName;
+	}
+
+	public FileNames getFileName() {
+		return fileName;
+	}
+
+	public void setFileName(FileNames fileName) {
+		this.fileName = fileName;
+	}
+
+	public String getId() {
+		return this.id;
+	}
+
+	public String getSource() {
+		return this.source;
+	}
+
+	public String getTarget() {
+		return this.target;
+	}
+
+	public void setTarget(String target) {
+		this.target = target;
+	}
+
+	public int getId1() {
+		return id1;
+	}
+
+	public void setId1(int id1) {
+		this.id1 = id1;
+	}
+
 
 	public enum POWrapType {
 		WRAP_ALL,
@@ -39,8 +80,6 @@ public class PO implements Comparable {
 	}
 
 	private Integer id1, id2, id3;
-
-	@Setter(AccessLevel.PUBLIC) @Getter(AccessLevel.PUBLIC)
 	private String id, source, target, stringFileName;
 	private boolean fuzzy = false;
 	private FileNames fileName;
@@ -83,6 +122,8 @@ public class PO implements Comparable {
 
 	}
 
+
+
 	public StringBuilder toPO() {
 		StringBuilder sb = new StringBuilder("\n\n#: ").append(getId());
 		if(isFuzzy()) sb.append("\n#, fuzzy");
@@ -92,6 +133,9 @@ public class PO implements Comparable {
 				.append("\nmsgstr \"\"");
 		return sb;
 	}
+
+
+
 
 	@Override
 	public int compareTo(Object o) {
