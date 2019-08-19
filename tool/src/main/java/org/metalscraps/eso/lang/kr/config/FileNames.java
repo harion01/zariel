@@ -1,4 +1,4 @@
-package org.metalscraps.eso.lang.lib.config;
+package org.metalscraps.eso.lang.kr.config;
 
 /**
  * Created by 안병길 on 2018-01-20.

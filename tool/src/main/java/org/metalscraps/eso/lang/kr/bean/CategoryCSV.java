@@ -1,7 +1,5 @@
 package org.metalscraps.eso.lang.kr.bean;
 
-import org.metalscraps.eso.lang.lib.bean.PO;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 

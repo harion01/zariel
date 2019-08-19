@@ -1,4 +1,4 @@
-package org.metalscraps.eso.lang.lib.config;
+package org.metalscraps.eso.lang.kr.config;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;

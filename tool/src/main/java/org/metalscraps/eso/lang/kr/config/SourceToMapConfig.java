@@ -1,5 +1,5 @@
-package org.metalscraps.eso.lang.lib.config;
-import org.metalscraps.eso.lang.lib.bean.PO;
+package org.metalscraps.eso.lang.kr.config;
+import org.metalscraps.eso.lang.kr.bean.PO;
 
 import java.io.File;
 import java.util.regex.Pattern;

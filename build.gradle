@@ -37,7 +37,11 @@ project(':tool') {
     jar.manifest { attributes 'Main-Class': 'org.metalscraps.eso.lang.kr.ToolMain' }
 
     dependencies {
-        compile project(':library')
+        // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
+        compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.8'
+
+        // https://mvnrepository.com/artifact/commons-io/commons-io
+        compile group: 'commons-io', name: 'commons-io', version: '2.6'
 
         // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
         compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'
@@ -50,17 +54,6 @@ project(':tool') {
         compile 'com.google.cloud:google-cloud-translate:1.14.0'
 
         compile group: 'org.jsoup', name: 'jsoup', version: '1.11.2'
-
-    }
-}
-project(':library') {
-    dependencies {
-
-        // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
-        compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.8'
-
-        // https://mvnrepository.com/artifact/commons-io/commons-io
-        compile group: 'commons-io', name: 'commons-io', version: '2.6'
 
     }
 }

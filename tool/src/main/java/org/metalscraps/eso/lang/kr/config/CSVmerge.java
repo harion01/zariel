@@ -1,7 +1,7 @@
 package org.metalscraps.eso.lang.kr.config;
 
 import org.metalscraps.eso.lang.kr.bean.CategoryCSV;
-import org.metalscraps.eso.lang.lib.bean.PO;
+import org.metalscraps.eso.lang.kr.bean.PO;
 
 import java.util.ArrayList;
 import java.util.HashMap;

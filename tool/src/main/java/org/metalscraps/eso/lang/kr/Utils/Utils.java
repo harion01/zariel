@@ -1,16 +1,16 @@
-package org.metalscraps.eso.lang.lib.util;
+package org.metalscraps.eso.lang.kr.Utils;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.metalscraps.eso.lang.lib.bean.ID;
-import org.metalscraps.eso.lang.lib.bean.PO;
-import org.metalscraps.eso.lang.lib.bean.ToCSVConfig;
-import org.metalscraps.eso.lang.lib.config.AppConfig;
-import org.metalscraps.eso.lang.lib.config.AppWorkConfig;
-import org.metalscraps.eso.lang.lib.config.SourceToMapConfig;
+import org.metalscraps.eso.lang.kr.bean.ID;
+import org.metalscraps.eso.lang.kr.bean.PO;
+import org.metalscraps.eso.lang.kr.bean.ToCSVConfig;
+import org.metalscraps.eso.lang.kr.config.AppConfig;
+import org.metalscraps.eso.lang.kr.config.AppWorkConfig;
+import org.metalscraps.eso.lang.kr.config.SourceToMapConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,7 +64,6 @@ public class Utils {
     }
 
     public static JsonNode getBodyFromHTTPsRequest(HttpRequest request){
-
         HttpClient client = HttpClient.newHttpClient();
         HttpResponse<String> response = null;
         try { response = client.send(request, HttpResponse.BodyHandlers.ofString()); }
@@ -99,7 +98,7 @@ public class Utils {
         downloadPO(appWorkConfig, "ESO-system");
         downloadPO(appWorkConfig, "ESO-book");
         downloadPO(appWorkConfig, "ESO-story");
-        logger.info("총 " + timeTaken.until(LocalTime.now(), ChronoUnit.SECONDS) + "초");
+        logger.info("total " + timeTaken.until(LocalTime.now(), ChronoUnit.SECONDS) + "sec");
     }
 
     public static void downloadPO(AppWorkConfig appWorkConfig, String projectName) {

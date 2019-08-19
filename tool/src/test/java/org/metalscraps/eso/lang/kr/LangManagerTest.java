@@ -7,18 +7,16 @@ import org.junit.Test;
 import org.metalscraps.eso.lang.kr.Utils.CategoryGenerator;
 import org.metalscraps.eso.lang.kr.bean.CategoryCSV;
 import org.metalscraps.eso.lang.kr.config.CSVmerge;
-import org.metalscraps.eso.lang.lib.bean.PO;
-import org.metalscraps.eso.lang.lib.config.AppConfig;
-import org.metalscraps.eso.lang.lib.config.AppWorkConfig;
-import org.metalscraps.eso.lang.lib.config.SourceToMapConfig;
-import org.metalscraps.eso.lang.lib.util.Utils;
+import org.metalscraps.eso.lang.kr.bean.PO;
+import org.metalscraps.eso.lang.kr.config.AppConfig;
+import org.metalscraps.eso.lang.kr.config.AppWorkConfig;
+import org.metalscraps.eso.lang.kr.config.SourceToMapConfig;
+import org.metalscraps.eso.lang.kr.Utils.Utils;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import java.io.File;
 import java.util.*;
-
-import static org.junit.Assert.*;
 
 public class LangManagerTest {
     public static LangManager LMG;
@@ -155,11 +153,9 @@ public class LangManagerTest {
         oneCSV.setPODataMap(targetCSV);
         oneCSV.setType("story");
         oneCSV.setZanataFileName("");
-        ArrayList<PO> poList = new ArrayList<>();
-        poList.addAll(targetCSV.values());
+        ArrayList<PO> poList = new ArrayList<>(targetCSV.values());
          LMG.CustomPOmodify(oneCSV);
          LMG.makePotFile(poList, true,  "("+oneCSV.getType()+")"+oneCSV.getZanataFileName(), oneCSV.getType(), "trs", "ko", "po");
-
 
     }
 

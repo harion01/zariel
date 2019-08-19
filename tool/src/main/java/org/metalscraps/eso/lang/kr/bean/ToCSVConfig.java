@@ -1,4 +1,4 @@
-package org.metalscraps.eso.lang.lib.bean;
+package org.metalscraps.eso.lang.kr.bean;
 
 /**
  * Created by 안병길 on 2018-01-24.

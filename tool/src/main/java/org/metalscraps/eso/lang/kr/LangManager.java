@@ -6,13 +6,13 @@ import org.metalscraps.eso.lang.kr.Utils.CategoryGenerator;
 import org.metalscraps.eso.lang.kr.Utils.PoConverter;
 import org.metalscraps.eso.lang.kr.bean.CategoryCSV;
 import org.metalscraps.eso.lang.kr.config.CSVmerge;
-import org.metalscraps.eso.lang.lib.bean.PO;
-import org.metalscraps.eso.lang.lib.bean.ToCSVConfig;
-import org.metalscraps.eso.lang.lib.config.AppConfig;
-import org.metalscraps.eso.lang.lib.config.AppWorkConfig;
-import org.metalscraps.eso.lang.lib.config.FileNames;
-import org.metalscraps.eso.lang.lib.config.SourceToMapConfig;
-import org.metalscraps.eso.lang.lib.util.Utils;
+import org.metalscraps.eso.lang.kr.bean.PO;
+import org.metalscraps.eso.lang.kr.bean.ToCSVConfig;
+import org.metalscraps.eso.lang.kr.config.AppConfig;
+import org.metalscraps.eso.lang.kr.config.AppWorkConfig;
+import org.metalscraps.eso.lang.kr.config.FileNames;
+import org.metalscraps.eso.lang.kr.config.SourceToMapConfig;
+import org.metalscraps.eso.lang.kr.Utils.Utils;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
@@ -595,11 +595,5 @@ class LangManager {
 
     }
 
-	void translateGoogle() {
-		this.PC.setAppWorkConfig(this.appWorkConfig);
-		//this.PC.translateGoogle();
-		//this.PC.filterNewPO();
-		this.PC.setFuzzyNbyG();
-	}
 
 }

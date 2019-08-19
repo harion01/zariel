@@ -1,6 +1,6 @@
-package org.metalscraps.eso.lang.lib.bean;
+package org.metalscraps.eso.lang.kr.bean;
 
-import org.metalscraps.eso.lang.lib.config.FileNames;
+import org.metalscraps.eso.lang.kr.config.FileNames;
 
 import java.util.Comparator;
 import java.util.Objects;

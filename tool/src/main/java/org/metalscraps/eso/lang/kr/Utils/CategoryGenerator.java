@@ -4,22 +4,18 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.metalscraps.eso.lang.kr.bean.CategoryCSV;
 import org.metalscraps.eso.lang.kr.bean.UpdateCSV;
-import org.metalscraps.eso.lang.lib.bean.PO;
-import org.metalscraps.eso.lang.lib.config.AppConfig;
-import org.metalscraps.eso.lang.lib.config.AppWorkConfig;
-import org.metalscraps.eso.lang.lib.config.FileNames;
-import org.metalscraps.eso.lang.lib.config.SourceToMapConfig;
-import org.metalscraps.eso.lang.lib.util.Utils;
+import org.metalscraps.eso.lang.kr.bean.PO;
+import org.metalscraps.eso.lang.kr.config.AppConfig;
+import org.metalscraps.eso.lang.kr.config.AppWorkConfig;
+import org.metalscraps.eso.lang.kr.config.FileNames;
+import org.metalscraps.eso.lang.kr.config.SourceToMapConfig;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
+import java.util.*;
 import java.util.regex.Matcher;
 
 
@@ -181,10 +177,8 @@ public class CategoryGenerator {
                 ex.printStackTrace();
             }
 
-            String idSplit[] = updateID.split("\n");
-            for (String id : idSplit) {
-                idArr.add(id);
-            }
+            String[] idSplit = updateID.split("\n");
+            Collections.addAll(idArr, idSplit);
             String updateName = file.getName().substring(0,file.getName().indexOf("_"));
             UpdateCSV upCSV = new UpdateCSV();
             upCSV.setUpdateName(updateName);
@@ -310,6 +304,7 @@ public class CategoryGenerator {
         sourceToMapConfig.setPattern(AppConfig.CSVPattern);
         for (File file : fileLinkedList) {
             System.out.println(file);
+            sourceToMapConfig.setFile(file);
             map.putAll(Utils.sourceToMap(sourceToMapConfig));
         }
         return map;

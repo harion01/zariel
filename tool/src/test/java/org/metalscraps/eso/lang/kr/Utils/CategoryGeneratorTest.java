@@ -4,8 +4,8 @@ package org.metalscraps.eso.lang.kr.Utils;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.metalscraps.eso.lang.kr.bean.CategoryCSV;
-import org.metalscraps.eso.lang.lib.bean.PO;
-import org.metalscraps.eso.lang.lib.config.AppWorkConfig;
+import org.metalscraps.eso.lang.kr.bean.PO;
+import org.metalscraps.eso.lang.kr.config.AppWorkConfig;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;

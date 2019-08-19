@@ -1,7 +1,7 @@
 package org.metalscraps.eso.lang.kr;
 
-import org.metalscraps.eso.lang.lib.config.AppWorkConfig;
-import org.metalscraps.eso.lang.lib.util.Utils;
+import org.metalscraps.eso.lang.kr.config.AppWorkConfig;
+import org.metalscraps.eso.lang.kr.Utils.Utils;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
@@ -35,7 +35,7 @@ class ToolMain {
 		System.out.println(appWorkConfig.getBaseDirectory());
 		System.out.print("7. change PO folder ");
 		System.out.println(appWorkConfig.getPODirectory());
-		System.out.println("9. 종료");
+		System.out.println("9. Exit");
 		System.out.println("300. generate csv category for Zanata upload");
 	}
 

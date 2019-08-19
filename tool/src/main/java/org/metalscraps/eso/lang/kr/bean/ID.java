@@ -1,4 +1,4 @@
-package org.metalscraps.eso.lang.lib.bean;
+package org.metalscraps.eso.lang.kr.bean;
 
 public class ID {
 

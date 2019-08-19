@@ -6,11 +6,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.metalscraps.eso.lang.kr.Utils.CategoryGenerator;
 import org.metalscraps.eso.lang.kr.bean.CategoryCSV;
-import org.metalscraps.eso.lang.lib.bean.PO;
-import org.metalscraps.eso.lang.lib.config.AppConfig;
-import org.metalscraps.eso.lang.lib.config.AppWorkConfig;
-import org.metalscraps.eso.lang.lib.config.SourceToMapConfig;
-import org.metalscraps.eso.lang.lib.util.Utils;
+import org.metalscraps.eso.lang.kr.bean.PO;
+import org.metalscraps.eso.lang.kr.Utils.Utils;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
@@ -19,8 +16,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-
-import static org.junit.Assert.*;
 
 public class CSVmergeTest {
     public static AppWorkConfig appWorkConfig;
@@ -82,8 +77,7 @@ public class CSVmergeTest {
             System.out.println("zanata po parsed ["+file+"] ");
         }
 
-        HashSet<CategoryCSV> categorizedCSV = new HashSet<>();
-        categorizedCSV.addAll(CategorizedSkillCsvList);
+        HashSet<CategoryCSV> categorizedCSV = new HashSet<>(CategorizedSkillCsvList);
         merge.MergeCSV(categorizedCSV, targetCSV, false);
 
 
