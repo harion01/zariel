@@ -125,33 +125,32 @@ class LangManager {
 		CategoryGenerator originCG = new CategoryGenerator(appWorkConfig);
 		originCG.GenCategoryConfigMap(appWorkConfig.getZanataCategoryConfigDirectory().toString()+"\\IndexMatch.txt");
 		originCG.GenCategory();
-		HashSet<CategoryCSV> categorizedCSV = originCG.getCategorizedCSV();
+		HashSet<CategoryCSV> categorizedClientCSV = originCG.getCategorizedCSV();
 
-		CSVmerge merge = new CSVmerge();
 		HashMap<String, PO> targetCSV = parseZanataPO(FileUtils.listFiles(appWorkConfig.getPODirectory(), new String[]{"po"}, false));
 
-		merge.MergeCSV(categorizedCSV, targetCSV, false);
+		CSVmerge merge = new CSVmerge();
+		merge.MergeCSV(categorizedClientCSV, targetCSV, false);
 
 
-
-		for(CategoryCSV oneCSV : categorizedCSV){
+		for(CategoryCSV oneCSV : categorizedClientCSV){
 			CustomPOmodify(oneCSV);
 			HashMap<String, PO> mergedPO = oneCSV.getPODataMap();
 			ArrayList<PO> poList = new ArrayList<>(mergedPO.values());
-			//makePotFile(poList, false,  oneCSV.getZanataFileName(), oneCSV.getType(), "src", "ko", "pot");
 			makePotFile(poList, true, oneCSV.getZanataFileName(), oneCSV.getType(), "trs", "ko", "po");
 		}
 
 
-
 		System.out.println("Select Csv file for generate ja-JP locale");
 		targetCSV = originCG.GetSelectedCSVMap();
-		merge.MergeCSV(categorizedCSV, targetCSV, true);
-		for(CategoryCSV oneCSV : categorizedCSV){
+		merge.MergeCSV(categorizedClientCSV, targetCSV, true);
+		for(CategoryCSV oneCSV : categorizedClientCSV){
 			HashMap<String, PO> mergedPO = oneCSV.getPODataMap();
 			ArrayList<PO> poList = new ArrayList<>(mergedPO.values());
 			makePotFile(poList, true, oneCSV.getZanataFileName(), oneCSV.getType(), "trs", "ja", "po");
 		}
+
+
 
 	}
 
@@ -286,7 +285,7 @@ class LangManager {
 	}
 
 
-	HashMap<String, PO> parseZanataPO(Collection<File> fileList){
+	public HashMap<String, PO> parseZanataPO(Collection<File> fileList){
 		HashMap<String, PO> targetCSV = new HashMap<>();
 		for (File file : fileList) {
 

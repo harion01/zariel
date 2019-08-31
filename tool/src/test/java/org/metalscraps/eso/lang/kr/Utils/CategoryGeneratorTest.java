@@ -1,6 +1,7 @@
 package org.metalscraps.eso.lang.kr.Utils;
 
 
+import org.apache.commons.io.FileUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.metalscraps.eso.lang.kr.bean.CategoryCSV;
@@ -60,7 +61,7 @@ public class CategoryGeneratorTest {
         System.out.println("========== Category Map info ===========");
         for (String index : testMap.keySet()) {
             CategoryCSV item = testMap.get(index);
-            System.out.println("index [" + index + "] filename [" + item.getZanataFileName() + "] ");
+            System.out.println("index [" + index + "] filename [" + item.getZanataFileName() + "] size ["+item.getPODataMap().size()+"]");
         }
         System.out.println("========== Category Map info ===========");
 
@@ -74,8 +75,9 @@ public class CategoryGeneratorTest {
         }
         System.out.println("========== Category Set info. total po count [" + totalPoCount + "] ===========");
 
-
     }
+
+
 
     public void printCategory(CategoryCSV item) {
         System.out.println("Category file name [" + item.getZanataFileName() + "] type [" + item.getType() + "] indexLinkCount [" + item.getLinkCount() +

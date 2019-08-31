@@ -262,7 +262,6 @@ public class Utils {
         boolean isPOPattern = config.getPattern() == (AppConfig.POPattern);
         while (m.find()) {
             PO po = new PO(m.group(2), m.group(6), m.group(7), config.isFillEmptyTrg()).wrap(config.getPrefix(), config.getSuffix(), config.getPoWrapType());
-            //po.setFileName(FileNames.fromString(fileName));
             po.setStringFileName(fileName);
             if(isPOPattern && m.group(1) != null && m.group(1).equals("#, fuzzy")) po.setFuzzy(true);
             poMap.put(m.group(config.getKeyGroup()), po);
@@ -274,7 +273,7 @@ public class Utils {
         System.out.println("target : "+file.getName());
         ArrayList<String> indexArr = new ArrayList<>();
         String source = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
-
+        //update 5start
         //System.out.println("source : "+source);
         String id = null;
 
@@ -330,31 +329,44 @@ public class Utils {
 
     private static String parseSourceToMap(SourceToMapConfig config) {
 
-        String source = null;
-        try {
-            source = FileUtils.readFileToString(config.getFile(), AppConfig.CHARSET);
+        StringBuilder fileread = new StringBuilder();
+
+        try (BufferedReader br = new BufferedReader(new FileReader(config.getFile()))) {
+            int i = 0;
+            for (String line; (line = br.readLine()) != null; ) {
+                i++;
+                if(i%10000 == 0) {
+                    System.out.println(i);
+                }
+                replaceSourceText(config, line);
+                fileread.append(line);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        if (config.isToLowerCase()) source = Objects.requireNonNull(source).toLowerCase();
-        //System.out.println("origin ["+source+"]");
+        return fileread.toString();
+    }
+
+    private static void replaceSourceText(SourceToMapConfig config, String origin){
+        //System.out.println("beforeReplace ["+origin+"]");
+        if (config.isToLowerCase()) {
+            origin = Objects.requireNonNull(origin).toLowerCase();
+        }
 
         if (config.isProcessText()) {
-            if (config.isProcessItemName()) source = Objects.requireNonNull(source).replaceAll("\\^[\\w]+", ""); // 아이템 명 뒤의 기호 수정
+            if (config.isProcessItemName()) {
+                origin = origin.replaceAll("\\^[\\w]+", ""); // 아이템 명 뒤의 기호 수정
+            }
 
-            source = convertEscape(source);
+            origin.replaceAll("\\\\(?!n)", "\\\\\\\\") // tip.pot-41714900-0-307 기타 등등 \ 이스케이프 문자 \n 제외하고 전부 \\로 이중 이스케이프
+                    .replaceAll("\\\\n", "\"\n\"\\\\n")  // "Lorem Ipsum is\nsimply" => "Lorem Ipsum is" + \n + "\\\\\nsimply" -> \n 자나타에서 \n 파싱 안됨
+                    .replaceAll("\\\\\"", "\"")
+                    .replaceAll("\\\\\"", "\"");
         }
-        //System.out.println("parsed ["+source+"]");
-        return source;
+        //System.out.println("after Replace ["+origin+"]");
     }
 
-    public static String convertEscape(String origin){
-        return origin.replaceAll("\\\\(?!n)", "\\\\\\\\") // tip.pot-41714900-0-307 기타 등등 \ 이스케이프 문자 \n 제외하고 전부 \\로 이중 이스케이프
-                .replaceAll("\\\\n", "\"\n\"\\\\n")  // "Lorem Ipsum is\nsimply" => "Lorem Ipsum is" + \n + "\\\\\nsimply" -> \n 자나타에서 \n 파싱 안됨
-                .replaceAll("\\\\\"", "\"")
-                .replaceAll("\\\\\"", "\"");
-    }
 
     private void processRun(String command, File directory) throws IOException, InterruptedException { processRun(command, ProcessBuilder.Redirect.INHERIT, directory); }
 

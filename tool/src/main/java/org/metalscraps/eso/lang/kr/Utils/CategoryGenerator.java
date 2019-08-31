@@ -91,8 +91,6 @@ public class CategoryGenerator {
                 splitTargetList.add(oneCSV);
             }
         }
-
-        SplitCategoryByUpdate(splitTargetList);
     }
 
 

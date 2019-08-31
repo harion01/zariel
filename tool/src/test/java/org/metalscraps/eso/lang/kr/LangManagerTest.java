@@ -69,7 +69,7 @@ public class LangManagerTest {
         Collection<File> fileList = FileUtils.listFiles(appWorkConfig.getPODirectory(), new String[]{"po"}, false);
 
         for (File file : fileList) {
-
+            System.out.println("zanata po parsed start["+file+"] ");
             String fileName = FilenameUtils.getBaseName(file.getName());
             // pregame 쪽 데이터
             if (fileName.equals("00_EsoUI_Client") || fileName.equals("00_EsoUI_Pregame")) continue;
@@ -78,7 +78,7 @@ public class LangManagerTest {
             cfg.setPattern(AppConfig.POPattern);
             cfg.setIsFillEmptyTrg(false);
             targetCSV.putAll(Utils.sourceToMap(cfg));
-            //System.out.println("zanata po parsed ["+file+"] ");
+            System.out.println("zanata po parsed ["+file+"] map size ["+targetCSV.size()+"]");
         }
     }
 

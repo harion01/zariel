@@ -47,6 +47,8 @@ class ToolMain {
 			case 1: Utils.downloadPOs(appWorkConfig); break;
 			case 2: Utils.convertKO_PO_to_CN(appWorkConfig); break;
 			case 22: Utils.convertCNtoKO(appWorkConfig); break;
+			// EsoExtractData.exe depot/eso.mnf export -a 0
+			// EsoExtractData.exe -l en_0124.lang -p
 			case 3: lm.makeCSVs(); break;
 			case 4: lm.makeLang(); break;
 			case 5:
