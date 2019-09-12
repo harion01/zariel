@@ -125,30 +125,32 @@ class LangManager {
 		CategoryGenerator originCG = new CategoryGenerator(appWorkConfig);
 		originCG.GenCategoryConfigMap(appWorkConfig.getZanataCategoryConfigDirectory().toString()+"\\IndexMatch.txt");
 		originCG.GenCategory();
-		HashSet<CategoryCSV> categorizedClientCSV = originCG.getCategorizedCSV();
+		HashSet<CategoryCSV> categorizedClientCSVSet = originCG.getCategorizedCSV();
 
-		HashMap<String, PO> targetCSV = parseZanataPO(FileUtils.listFiles(appWorkConfig.getPODirectory(), new String[]{"po"}, false));
+		HashMap<String, PO> targetCSVMap = parseZanataPO(FileUtils.listFiles(appWorkConfig.getPODirectory(), new String[]{"po"}, false));
 
 		CSVmerge merge = new CSVmerge();
-		merge.MergeCSV(categorizedClientCSV, targetCSV, false);
+		merge.MergeCSV(categorizedClientCSVSet, targetCSVMap, false);
 
-
-		for(CategoryCSV oneCSV : categorizedClientCSV){
+		for(CategoryCSV oneCSV : categorizedClientCSVSet){
 			CustomPOmodify(oneCSV);
 			HashMap<String, PO> mergedPO = oneCSV.getPODataMap();
 			ArrayList<PO> poList = new ArrayList<>(mergedPO.values());
+			makePotFile(poList, false, oneCSV.getZanataFileName(), oneCSV.getType(), "src", "ko", "pot");
 			makePotFile(poList, true, oneCSV.getZanataFileName(), oneCSV.getType(), "trs", "ko", "po");
 		}
 
 
 		System.out.println("Select Csv file for generate ja-JP locale");
-		targetCSV = originCG.GetSelectedCSVMap();
-		merge.MergeCSV(categorizedClientCSV, targetCSV, true);
-		for(CategoryCSV oneCSV : categorizedClientCSV){
+		targetCSVMap = originCG.GetSelectedCSVMap();
+		merge.MergeCSV(categorizedClientCSVSet, targetCSVMap, true);
+		for(CategoryCSV oneCSV : categorizedClientCSVSet){
 			HashMap<String, PO> mergedPO = oneCSV.getPODataMap();
 			ArrayList<PO> poList = new ArrayList<>(mergedPO.values());
 			makePotFile(poList, true, oneCSV.getZanataFileName(), oneCSV.getType(), "trs", "ja", "po");
 		}
+
+
 
 
 
@@ -313,19 +315,15 @@ class LangManager {
 			}
 		}
 
-		if("book".equals(targetCSV.getType())){
-			for(PO po : targetPO.values()){
-				if(po.getSource().equals(po.getTarget())){
-					po.setTarget("");
-				}
-			}
-		} else if ("skill".equals(targetCSV.getType())){
+		if ("skill".equals(targetCSV.getType())){
 			for(PO po : targetPO.values()){
 				if(po.getId1() == 198758357){
 					po.setTarget(po.getSource());
 				}
 			}
 		}
+
+		targetCSV.setZanataFileName(targetCSV.getZanataFileName().replace(",", "_"));
 	}
 
 
@@ -382,6 +380,8 @@ class LangManager {
 
 		int fileCount = 0;
 		int appendCount = 0;
+
+
 		String splitFile = fileName;
 		StringBuilder sb = new StringBuilder();
 
@@ -424,13 +424,13 @@ class LangManager {
 		try {
 			for (Map.Entry<String, StringBuilder> entry : builderMap.entrySet()) {
 				if("trs".equals(folder)) {
-					//String path = appWorkConfig.getBaseDirectory() + "/" + folder + "/" + type + "/" + language + "/" + entry.getKey() + "." + fileExtension;
-					String path = appWorkConfig.getBaseDirectory() + "/" + folder +  "/" + language + "/("+type+")" + entry.getKey() + "." + fileExtension;
+					String path = appWorkConfig.getBaseDirectory() + "/" + folder + "/" + type + "/" + language + "/" + entry.getKey() + "." + fileExtension;
+					//String path = appWorkConfig.getBaseDirectory() + "/" + folder +  "/" + language + "/("+type+")" + entry.getKey() + "." + fileExtension;
 					System.out.println("gen file ["+path+"]");
 					FileUtils.writeStringToFile(new File(path), entry.getValue().toString(), AppConfig.CHARSET);
 				}else {
-					//String path = appWorkConfig.getBaseDirectory() + "/" + folder + "/" + type + "/" + entry.getKey() + "." + fileExtension;
-					String path = appWorkConfig.getBaseDirectory() + "/" + folder +"/" + entry.getKey() + "." + fileExtension;
+					String path = appWorkConfig.getBaseDirectory() + "/" + folder + "/" + type + "/" + entry.getKey() + "." + fileExtension;
+					//String path = appWorkConfig.getBaseDirectory() + "/" + folder +"/" + entry.getKey() + "." + fileExtension;
 					System.out.println("gen file ["+path+"]");
 					FileUtils.writeStringToFile(new File(path), entry.getValue().toString(), AppConfig.CHARSET);
 				}

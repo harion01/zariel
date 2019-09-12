@@ -75,6 +75,13 @@ public class CategoryGeneratorTest {
         }
         System.out.println("========== Category Set info. total po count [" + totalPoCount + "] ===========");
 
+
+    }
+
+    public void mergeCountTest(){
+        this.genMainCategory();
+
+
     }
 
 
@@ -153,5 +160,12 @@ public class CategoryGeneratorTest {
         ArrayList<CategoryCSV> dumyList = new ArrayList<>();
         CG.SplitCategoryByUpdate(dumyList);
 
+    }
+
+    public void poPrint(PO po){
+        System.out.println("Is fuzzy: "+po.isFuzzy());
+        System.out.println("ID : "+po.getId());
+        System.out.println("Source : "+po.getSource());
+        System.out.println("Target: "+po.getTarget());
     }
 }

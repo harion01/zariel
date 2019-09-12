@@ -85,12 +85,6 @@ public class CategoryGenerator {
             }
         }
 
-        ArrayList<CategoryCSV> splitTargetList = new ArrayList<>();
-        for(CategoryCSV oneCSV : CategorizedCSV) {
-            if ("story".equals(oneCSV.getType())) {
-                splitTargetList.add(oneCSV);
-            }
-        }
     }
 
 
@@ -327,13 +321,8 @@ public class CategoryGenerator {
         if(genRet){
             System.out.println("SkillCSV Size : "+CategorizedSkillCsvList.size());
             for(CategoryCSV oneCSV : CategorizedSkillCsvList){
-                for(String index: oneCSV.getPoIndexList() ){
-                    PO poData = MainPoMap.get(index);
-                    if(poData != null) {
-                        poData.setFileName(FileNames.fromString(oneCSV.getZanataFileName()));
-                        oneCSV.putPoData(index, poData);
-                        MainPoMap.remove(index);
-                    }
+                for(String index: oneCSV.getPoIndexList() ) {
+                    categorizePOMapData(MainPoMap, oneCSV, index);
                 }
             }
         }
@@ -349,12 +338,7 @@ public class CategoryGenerator {
             System.out.println("ItemCSV Size : "+CategorizedItemCsvList.size());
             for(CategoryCSV oneCSV : CategorizedItemCsvList){
                 for(String index: oneCSV.getPoIndexList() ){
-                    PO poData = MainPoMap.get(index);
-                    if(poData != null) {
-                        poData.setFileName(FileNames.fromString(oneCSV.getZanataFileName()));
-                        oneCSV.putPoData(index, poData);
-                        MainPoMap.remove(index);
-                    }
+                    categorizePOMapData(MainPoMap, oneCSV, index);
                 }
             }
         }
@@ -364,6 +348,17 @@ public class CategoryGenerator {
             CategorizedCSV.add(oneCSV);
         }
 
+    }
+
+    private void categorizePOMapData(HashMap<String, PO> MainPoMap, CategoryCSV oneCSV, String index) {
+        PO poData = MainPoMap.get(index);
+        if(poData != null) {
+            if(poData.getFileName() == null) {
+                poData.setFileName(FileNames.fromString(oneCSV.getZanataFileName()));
+            }
+            oneCSV.putPoData(index, poData);
+            MainPoMap.remove(index);
+        }
     }
 
     public boolean GenSkillCategory(ArrayList<CategoryCSV> SkillCSV){

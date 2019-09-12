@@ -44,42 +44,37 @@ public class CSVmergeTest {
 
     @Test
     public void mergeCSV() {
-        /*
-        CategoryGenerator originCG = new CategoryGenerator(appWorkConfig);
-        originCG.GenCategoryConfigMap(appWorkConfig.getZanataCategoryConfigDirectory().toString()+"\\IndexMatch.txt");
-        originCG.GenCategory();
-        HashSet<CategoryCSV> categorizedCSV = originCG.getCategorizedCSV();
-        */
 
-        ArrayList<CategoryCSV> CategorizedSkillCsvList = new ArrayList<>();
-        CG.GenSkillCategory(CategorizedSkillCsvList);
-        for(CategoryCSV oneCSV : CategorizedSkillCsvList){
-            System.out.println("------------------------------------------");
-            System.out.println("file name : "+oneCSV.getZanataFileName());
-            for(String key: oneCSV.getPoIndexList()){
-                System.out.println("index : "+key);
-            }
-            System.out.println("------------------------------------------");
-        }
+        AppWorkConfig appWorkConfig = new AppWorkConfig();
+        JFileChooser jFileChooser = new JFileChooser();
+        File workDir = new File(jFileChooser.getCurrentDirectory().getAbsolutePath() + "/Elder Scrolls Online/EsoKR");
+        jFileChooser.setCurrentDirectory(workDir);
+        appWorkConfig.setBaseDirectory(workDir);
+        appWorkConfig.setZanataCategoryConfigDirectory(new File(appWorkConfig.getBaseDirectory() + "/ZanataCategory"));
+
+        CategoryGenerator CG = new CategoryGenerator(appWorkConfig);
+        HashMap<String, PO> CSVMap = CG.GetSelectedCSVMap();
 
         CSVmerge merge = new CSVmerge();
         HashMap<String, PO> targetCSV = new HashMap<>();
-        Collection<File> fileList = FileUtils.listFiles(appWorkConfig.getPODirectory(), new String[]{"po"}, false);
-        for (File file : fileList) {
+        File file = new File("C:\\Users\\hario\\OneDrive\\Documents\\Elder Scrolls Online\\EsoKR\\mergeTest\\test.po");
+        SourceToMapConfig cfg = new SourceToMapConfig();
+        cfg.setFile(file);
+        cfg.setPattern(AppConfig.POPattern);
+        targetCSV.putAll(Utils.sourceToMap(cfg));
+        System.out.println("zanata po parsed [" + file + "] ");
 
-            String fileName = FilenameUtils.getBaseName(file.getName());
-            // pregame 쪽 데이터
-            if (fileName.equals("00_EsoUI_Client") || fileName.equals("00_EsoUI_Pregame")) continue;
-            SourceToMapConfig cfg = new SourceToMapConfig();
-            cfg.setFile(file);
-            cfg.setPattern(AppConfig.POPattern);
-            targetCSV.putAll(Utils.sourceToMap(cfg));
-            System.out.println("zanata po parsed ["+file+"] ");
+        merge.MergePO(CSVMap, targetCSV, false, false);
+
+        for(PO po : CSVMap.values()) {
+            poPrint(po);
         }
+    }
 
-        HashSet<CategoryCSV> categorizedCSV = new HashSet<>(CategorizedSkillCsvList);
-        merge.MergeCSV(categorizedCSV, targetCSV, false);
-
-
+    public void poPrint(PO po){
+        System.out.println("Is fuzzy: "+po.isFuzzy());
+        System.out.println("ID : "+po.getId());
+        System.out.println("Source : "+po.getSource());
+        System.out.println("Target: "+po.getTarget());
     }
 }

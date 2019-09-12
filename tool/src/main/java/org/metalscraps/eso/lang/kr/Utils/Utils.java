@@ -257,17 +257,27 @@ public class Utils {
         HashMap<String, PO> poMap = new HashMap<>();
         String fileName = FilenameUtils.getBaseName(config.getFile().getName());
         String source = parseSourceToMap(config);
-
         Matcher m = config.getPattern().matcher(source);
         boolean isPOPattern = config.getPattern() == (AppConfig.POPattern);
         while (m.find()) {
-            PO po = new PO(m.group(2), m.group(6), m.group(7), config.isFillEmptyTrg()).wrap(config.getPrefix(), config.getSuffix(), config.getPoWrapType());
+            PO po;
+            if(isPOPattern) {
+                po = new PO(m.group(3), m.group(6), m.group(9), config.isFillEmptyTrg()).wrap(config.getPrefix(), config.getSuffix(), config.getPoWrapType());
+                if(m.group(1) != null && m.group(1).equals("#, fuzzy")){
+                    po.setFuzzy(true);
+                }
+                po.setSource(po.getSource().replace("\"\n\"" ,""));
+                po.setTarget(po.getTarget().replace("\"\n\"" ,""));
+            }else {
+                po = new PO(m.group(3), m.group(7), m.group(8), config.isFillEmptyTrg()).wrap(config.getPrefix(), config.getSuffix(), config.getPoWrapType());
+            }
             po.setStringFileName(fileName);
-            if(isPOPattern && m.group(1) != null && m.group(1).equals("#, fuzzy")) po.setFuzzy(true);
             poMap.put(m.group(config.getKeyGroup()), po);
         }
         return poMap;
     }
+
+
 
     public static ArrayList<String> CustomSourceToArray(File file) throws  Exception {
         System.out.println("target : "+file.getName());
@@ -328,24 +338,15 @@ public class Utils {
     }
 
     private static String parseSourceToMap(SourceToMapConfig config) {
-
-        StringBuilder fileread = new StringBuilder();
-
-        try (BufferedReader br = new BufferedReader(new FileReader(config.getFile()))) {
-            int i = 0;
-            for (String line; (line = br.readLine()) != null; ) {
-                i++;
-                if(i%10000 == 0) {
-                    System.out.println(i);
-                }
-                replaceSourceText(config, line);
-                fileread.append(line);
-            }
+        String source = null;
+        try {
+            source = FileUtils.readFileToString(config.getFile(), AppConfig.CHARSET);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        return fileread.toString();
+        replaceSourceText(config, source);
+        return source;
     }
 
     private static void replaceSourceText(SourceToMapConfig config, String origin){
@@ -359,10 +360,13 @@ public class Utils {
                 origin = origin.replaceAll("\\^[\\w]+", ""); // 아이템 명 뒤의 기호 수정
             }
 
+
             origin.replaceAll("\\\\(?!n)", "\\\\\\\\") // tip.pot-41714900-0-307 기타 등등 \ 이스케이프 문자 \n 제외하고 전부 \\로 이중 이스케이프
                     .replaceAll("\\\\n", "\"\n\"\\\\n")  // "Lorem Ipsum is\nsimply" => "Lorem Ipsum is" + \n + "\\\\\nsimply" -> \n 자나타에서 \n 파싱 안됨
                     .replaceAll("\\\\\"", "\"")
                     .replaceAll("\\\\\"", "\"");
+
+
         }
         //System.out.println("after Replace ["+origin+"]");
     }

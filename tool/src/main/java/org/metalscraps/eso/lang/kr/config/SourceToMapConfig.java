@@ -108,7 +108,7 @@ public class SourceToMapConfig {
 	}
 
 	private File file = null;
-	private int keyGroup = 2;
+	private int keyGroup = 3;
 	private boolean
 			processText = true,
 			processItemName = true,
