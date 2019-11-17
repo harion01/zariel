@@ -98,6 +98,14 @@ public class PO implements Comparable<PO> {
         return o1.getId3() - o2.getId3();
     };
 
+	public boolean isNewData() {
+		return isNewData;
+	}
+
+	public void setNewData(boolean newData) {
+		isNewData = newData;
+	}
+
 	public enum POWrapType {
 		WRAP_ALL,
 		WRAP_SOURCE,
@@ -109,6 +117,7 @@ public class PO implements Comparable<PO> {
 		this.id = id;
 		this.source = source;
 		this.target = target;
+		this.isNewData = true;
 
 		String[] ids = id.split("-");
 		id1 = Integer.parseInt(ids[0]);
@@ -139,6 +148,7 @@ public class PO implements Comparable<PO> {
 	private Integer id1, id2, id3;
 	private String id, source, target, stringFileName;
 	private boolean fuzzy = false;
+	private boolean isNewData = true;
 	private FileNames fileName;
 
 

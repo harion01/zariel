@@ -58,7 +58,8 @@ public class CSVmerge {
                         basePO.setTarget(targetPO.getTarget());
                     }
                 }
-                //basePO.setStringFileName(targetPO.getStringFileName());
+                basePO.setStringFileName(targetPO.getStringFileName());
+                basePO.setNewData(false);
             }
         }
     }

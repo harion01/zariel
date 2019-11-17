@@ -30,6 +30,7 @@ public class UtilTest {
         System.out.println("Is fuzzy: "+po.isFuzzy());
         System.out.println("ID : "+po.getId());
         System.out.println("Source : "+po.getSource());
+
         System.out.println("Target: "+po.getTarget());
     }
 

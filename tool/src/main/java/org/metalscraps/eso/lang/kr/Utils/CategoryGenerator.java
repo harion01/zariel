@@ -22,6 +22,7 @@ import java.util.regex.Matcher;
 public class CategoryGenerator {
     private PoConverter PC = new PoConverter();
     private final AppWorkConfig appWorkConfig;
+    private int currentUpdateNum = 0;
 
     public PoConverter getPC() {
         return PC;
@@ -575,6 +576,58 @@ public class CategoryGenerator {
         return wbCrawlRet;
     }
 
+    public ArrayList<CategoryCSV> splitStoryByUpdate(CategoryCSV originCSV) {
+        HashMap<String, CategoryCSV> fineNameCategoryMap = new HashMap<>();
+        HashMap<String, PO> originPOMap = originCSV.getPODataMap();
+        ArrayList<String> removeKeyList = new ArrayList<>();
+
+        for(String key : originPOMap.keySet()){
+            PO onePO = originPOMap.get(key);
+            if(!onePO.isNewData()){
+                String prevUpdateFilename = onePO.getStringFileName();
+                CategoryCSV prevDataCSV = fineNameCategoryMap.get(prevUpdateFilename);
+                if(prevDataCSV == null){
+                    prevDataCSV = new CategoryCSV();
+                    prevDataCSV.setZanataFileName(prevUpdateFilename);
+                    prevDataCSV.setType(originCSV.getType());
+                    fineNameCategoryMap.put(prevUpdateFilename, prevDataCSV);
+                }
+                prevDataCSV.putPoData(key, onePO);
+                prevDataCSV.addPoIndex(key);
+                removeKeyList.add(key);
+            }
+        }
+
+        for(String key : removeKeyList) {
+            originCSV.removePoIndex(key);
+            originCSV.removePoData(key);
+        }
+
+        String newUpdateFileName = "up"+this.getCurrentUpdateNum()+"-"+originCSV.getZanataFileName();
+        CategoryCSV newDataCSV = fineNameCategoryMap.get(newUpdateFileName);
+        if(newDataCSV == null){
+            newDataCSV = originCSV;
+        } else {
+            newDataCSV.addPoList(originCSV.getPoIndexList());
+            newDataCSV.addPoMap(originCSV.getPODataMap());
+        }
+        newDataCSV.setZanataFileName(newUpdateFileName);
+        fineNameCategoryMap.put(newUpdateFileName, newDataCSV);
+
+        ArrayList<CategoryCSV> returnVal = new ArrayList<>();
+        for(CategoryCSV oneCSV : fineNameCategoryMap.values()){
+            returnVal.add(oneCSV);
+        }
+        return returnVal;
+    }
+
+    public int getCurrentUpdateNum() {
+        return currentUpdateNum;
+    }
+
+    public void setCurrentUpdateNum(int currentUpdateNum) {
+        this.currentUpdateNum = currentUpdateNum;
+    }
 }
 
 

@@ -132,6 +132,39 @@ class LangManager {
 		CSVmerge merge = new CSVmerge();
 		merge.MergeCSV(categorizedClientCSVSet, targetCSVMap, false);
 
+		HashSet<CategoryCSV> splitedSet = new HashSet<>();
+		originCG.setCurrentUpdateNum(23);
+		ArrayList<CategoryCSV> removeTarget = new ArrayList<>();
+		for(CategoryCSV oneCSV : categorizedClientCSVSet){
+			if(oneCSV.getType().equals("story")){
+				removeTarget.add(oneCSV);
+
+				System.out.println("========== split data original info ============");
+				System.out.println("zanata name : "+ oneCSV.getZanataFileName());
+				System.out.println("data count : "+ oneCSV.getPODataMap().size());
+				System.out.println("======================");
+
+				ArrayList<CategoryCSV> updateSplitStoryList = originCG.splitStoryByUpdate(oneCSV);
+				System.out.println("========== split data after info ============");
+				int totalcount = 0;
+				for(CategoryCSV splitCSV :updateSplitStoryList){
+					System.out.println("zanata name : "+ splitCSV.getZanataFileName());
+					System.out.println("data count : "+ splitCSV.getPODataMap().size());
+					totalcount = totalcount+splitCSV.getPODataMap().size();
+				}
+				System.out.println("=========== total splited count ["+totalcount+"]===========");
+				splitedSet.addAll(updateSplitStoryList);
+			}
+		}
+
+		for(CategoryCSV removeCSV : removeTarget){
+			categorizedClientCSVSet.remove(removeCSV);
+		}
+
+		categorizedClientCSVSet.addAll(splitedSet);
+
+
+
 		for(CategoryCSV oneCSV : categorizedClientCSVSet){
 			CustomPOmodify(oneCSV);
 			HashMap<String, PO> mergedPO = oneCSV.getPODataMap();
@@ -593,6 +626,7 @@ class LangManager {
 		}
 
     }
+
 
 
 }

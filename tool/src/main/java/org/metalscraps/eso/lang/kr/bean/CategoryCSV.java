@@ -57,4 +57,19 @@ public class CategoryCSV {
 	public void putPoData(String index, PO po){
 		PODataMap.put(index, po);
 	}
+
+	public void removePoIndex(String index){
+		PoIndexList.remove(index);
+	}
+	public void removePoData(String index){
+		PODataMap.remove(index);
+	}
+
+	public void addPoList(ArrayList<String> targetIndexList){
+		PoIndexList.addAll(targetIndexList);
+	}
+
+	public void addPoMap(HashMap<String, PO> targetPODataMap ){
+		PODataMap.putAll(targetPODataMap);
+	}
 }
